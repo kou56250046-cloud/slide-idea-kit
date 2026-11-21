@@ -1,0 +1,7 @@
+# 許可リスト方式: 公開するのはブラウザで開くのに必要なファイルだけ
+/*
+!/.gitignore
+!/index.html
+!/prompts.html
+!/css/
+!/js/

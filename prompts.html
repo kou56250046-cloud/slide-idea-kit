@@ -1,0 +1,1053 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>Gemini プロンプト集 — 動くスライド</title>
+<style>
+:root {
+  --bg: #0b0f17; --panel: #111827; --panel2: #162033; --line: #243049;
+  --fg: #e6edf7; --mute: #8b98ad; --accent: #6ea8ff; --good: #4ade80; --warn: #fbbf24;
+  --sans: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Meiryo", system-ui, sans-serif;
+  --mono: "SF Mono", "Cascadia Mono", Consolas, "BIZ UDGothic", monospace;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.7 var(--sans); }
+a { color: var(--accent); }
+button { font: inherit; color: inherit; cursor: pointer; }
+header.top { padding: 22px 32px 10px; display: flex; align-items: baseline; gap: 24px; flex-wrap: wrap; }
+header.top h1 { margin: 0; font-size: 26px; }
+header.top .sub { color: var(--mute); }
+header.top .deck { margin-left: auto; }
+.howto { margin: 0 32px 16px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; }
+.howto summary { padding: 12px 18px; font-weight: 700; cursor: pointer; }
+.howto .body { padding: 0 22px 16px; display: grid; grid-template-columns: 1.2fr 1fr; gap: 28px; }
+.howto ol { margin: 0; padding-left: 1.4em; }
+.howto li { margin: 4px 0; }
+.howto h3 { margin: 6px 0 4px; font-size: 15px; color: var(--accent); }
+.howto ul { margin: 0; padding-left: 1.2em; color: var(--mute); }
+.layout { display: grid; grid-template-columns: 320px 1fr; gap: 20px; padding: 0 32px 24px; align-items: start; }
+aside { position: sticky; top: 12px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px; max-height: calc(100vh - 24px); overflow: auto; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.chip { background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 3px 12px; font-size: 13px; color: var(--mute); }
+.chip.on { background: var(--accent); border-color: var(--accent); color: #07101f; font-weight: 700; }
+.list { list-style: none; margin: 0; padding: 0; }
+.item { width: 100%; text-align: left; background: none; border: 0; border-radius: 8px; padding: 7px 10px; display: grid; grid-template-columns: 30px 1fr; align-items: baseline; }
+.item:hover { background: var(--panel2); }
+.item.on { background: var(--panel2); box-shadow: inset 3px 0 0 var(--accent); }
+.item .no { font: 700 13px var(--mono); color: var(--accent); }
+.item .cat { grid-column: 2; font-size: 12px; color: var(--mute); }
+main { min-width: 0; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 20px 24px; margin-bottom: 16px; }
+.title-row { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+.title-row h2 { margin: 0; font-size: 24px; }
+.badge { font-size: 12px; border: 1px solid var(--line); border-radius: 999px; padding: 1px 10px; color: var(--mute); }
+.open-sample { margin-left: auto; font-weight: 700; text-decoration: none; border: 1px solid var(--accent); border-radius: 8px; padding: 4px 12px; }
+.image { color: var(--mute); margin: 8px 0 0; }
+.fields { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px 16px; }
+.field label { display: block; font-size: 13px; color: var(--mute); margin-bottom: 2px; }
+.field input, .field textarea { width: 100%; background: var(--bg); color: var(--fg); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; font: 14px/1.5 var(--sans); }
+.field textarea { resize: vertical; min-height: 64px; }
+.field input:focus, .field textarea:focus { outline: none; border-color: var(--accent); }
+.field.wide { grid-column: 1 / -1; }
+.reset { background: none; border: 0; color: var(--mute); font-size: 13px; text-decoration: underline; padding: 0; margin-top: 8px; }
+.prompt-head { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.prompt-head h3 { margin: 0; font-size: 16px; }
+.copy { background: var(--accent); color: #07101f; border: 0; border-radius: 8px; padding: 7px 18px; font-weight: 800; }
+.copy.done { background: var(--good); }
+.count { color: var(--mute); font-size: 13px; }
+pre.preview { margin: 0; white-space: pre-wrap; word-break: break-word; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; font: 14px/1.75 var(--sans); max-height: 520px; overflow: auto; }
+.preview .fill { background: rgba(110,168,255,.18); color: #cfe0ff; border-radius: 4px; padding: 0 2px; }
+.preview .common { color: var(--mute); }
+.checks { margin: 0; padding-left: 1.3em; }
+.checks li { margin: 2px 0; }
+h3.sec { margin: 0 0 8px; font-size: 16px; }
+.fixes { width: 100%; border-collapse: collapse; }
+.fixes td { border-top: 1px solid var(--line); padding: 8px 6px; vertical-align: top; }
+.fixes td:first-child { color: var(--mute); width: 220px; }
+.fixes .mini { background: var(--panel2); border: 1px solid var(--line); border-radius: 6px; padding: 2px 10px; font-size: 13px; white-space: nowrap; }
+.fixes .mini.done { border-color: var(--good); color: var(--good); }
+.toast { position: fixed; right: 24px; bottom: 24px; background: var(--good); color: #062; font-weight: 800; padding: 10px 18px; border-radius: 10px; opacity: 0; transform: translateY(10px); transition: .25s; pointer-events: none; }
+.toast.on { opacity: 1; transform: none; }
+[hidden] { display: none !important; }
+.modes { display: flex; gap: 8px; margin: 0 32px 16px; }
+.mode { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 8px 20px; font-weight: 700; color: var(--mute); }
+.mode.on { background: var(--accent); border-color: var(--accent); color: #07101f; }
+.combo { padding: 0 32px; }
+.fixes-card { margin: 0 32px 32px; }
+.presets { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px; }
+.preset { text-align: left; background: var(--panel2); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; }
+.preset:hover, .preset.on { border-color: var(--accent); }
+.preset b { display: block; font-size: 15px; }
+.preset span { display: block; font-size: 13px; color: var(--mute); }
+.preset .tags { color: var(--accent); margin-top: 4px; }
+.parts { display: grid; gap: 8px; }
+.part { display: grid; grid-template-columns: 34px 1fr 260px 90px; gap: 10px; align-items: center; }
+.part .slot { font: 800 18px var(--mono); color: var(--accent); }
+.part select { background: var(--bg); color: var(--fg); border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; font: 14px var(--sans); }
+.part label { font-size: 13px; color: var(--mute); }
+.note { color: var(--mute); font-size: 13px; margin: 8px 0 0; }
+.warn { color: var(--warn); font-size: 14px; margin: 8px 0 0; min-height: 1em; }
+.step { margin-bottom: 14px; }
+.step-head { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+.step-head b { font-size: 15px; }
+#c-kind { margin: 0; }
+@media (max-width: 900px) { .layout { grid-template-columns: 1fr; } aside { position: static; max-height: none; } .howto .body { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>Gemini プロンプト集</h1>
+  <span class="sub">動くスライドの 29 の見せ方を、Gemini（Canvas）に作らせる</span>
+  <a class="deck" href="index.html" target="_blank">見本集を開く →</a>
+</header>
+
+<details class="howto" open>
+  <summary>使い方</summary>
+  <div class="body">
+    <div>
+      <ol>
+        <li>左の一覧から技法を選ぶ。「見本を開く」で完成形の動きを先に確かめる</li>
+        <li>「中身を書き換える」の欄を自分の内容に変える（そのままでも既定値で動く）。下のプロンプトに即座に反映される（反映された部分は青く光る）</li>
+        <li>「コピー」を押す。共通の条件も最初から入っている</li>
+        <li>Gemini アプリ（gemini.google.com）を開き、入力欄のツールから <b>Canvas</b> を選んでから貼り付けて送る</li>
+        <li>右側に出るプレビューで動きを確かめる。崩れていたら、ページ下の「直させ方」をコピーして送る</li>
+        <li>仕上がったらコードをコピー（またはダウンロード）し、<code>名前.html</code> で保存してダブルクリックで開く</li>
+      </ol>
+    </div>
+    <div>
+      <h3>コツ</h3>
+      <ul>
+        <li>1枚に複数の手法を入れたいときは「組み合わせ」へ。配置・主役・つながりを決めると、プロンプトが組み上がる。<b>段階版</b>（主役だけ作る → 1つずつ足す）のほうが崩れにくい</li>
+        <li>数値や名前は入力欄で具体的に渡す。曖昧だと毎回違うものが出る</li>
+        <li>保存した HTML は、ネットを切った状態で開いて動くか確かめる（Canvas のプレビューで動いても、外部を読んでいることがある）</li>
+        <li>Canvas のボタン名や位置は変わることがある。見当たらなければ、入力欄のツール（＋や「ツール」）の中を探す</li>
+      </ul>
+    </div>
+  </div>
+</details>
+
+<nav class="modes" id="modes">
+  <button class="mode on" data-mode="single">1つずつ</button>
+  <button class="mode" data-mode="combo">組み合わせ（1枚に複数の手法）</button>
+</nav>
+
+<div class="layout" id="single">
+  <aside>
+    <div class="chips" id="chips"></div>
+    <ul class="list" id="list"></ul>
+  </aside>
+  <main>
+    <section class="card" id="head"></section>
+    <section class="card">
+      <h3 class="sec">中身を書き換える</h3>
+      <div class="fields" id="fields"></div>
+      <button class="reset" id="reset">既定値に戻す</button>
+    </section>
+    <section class="card">
+      <div class="prompt-head"><h3>Gemini に送るプロンプト</h3><button class="copy" id="copy">コピー</button><span class="count" id="count"></span></div>
+      <pre class="preview" id="preview"></pre>
+    </section>
+    <section class="card">
+      <h3 class="sec">確かめること</h3>
+      <ul class="checks" id="checks"></ul>
+    </section>
+  </main>
+</div>
+
+<div class="combo" id="combo" hidden>
+  <section class="card">
+    <h3 class="sec">おすすめの組み合わせ（押すと下にまとめて入る）</h3>
+    <div class="presets" id="presets"></div>
+  </section>
+  <section class="card">
+    <h3 class="sec">部品を選ぶ（2〜3個。主役は1つ）</h3>
+    <div class="parts" id="parts"></div>
+    <p class="note">部品の中身には、「1つずつ」の画面で書き換えた値がそのまま入ります。</p>
+  </section>
+  <section class="card">
+    <h3 class="sec">1枚の設計</h3>
+    <div class="fields">
+      <div class="field wide"><label>伝えたいこと（1文）</label><input type="text" id="c-goal"></div>
+      <div class="field wide"><label>つながり（どの操作が、どの部品を変えるか）</label><textarea id="c-links" rows="4"></textarea></div>
+      <div class="field wide"><label>時間の流れ（何秒後に何が出るか、クリックで何が起きるか）</label><textarea id="c-time" rows="3"></textarea></div>
+    </div>
+    <p class="warn" id="c-warn"></p>
+  </section>
+  <section class="card">
+    <div class="prompt-head">
+      <h3>Gemini に送るプロンプト</h3>
+      <div class="chips" id="c-kind"><button class="chip on" data-k="bulk">一括版（1回で頼む）</button><button class="chip" data-k="step">段階版（2〜3回に分けて頼む・おすすめ）</button></div>
+    </div>
+    <div id="c-out"></div>
+  </section>
+</div>
+
+<section class="card fixes-card">
+  <h3 class="sec">直させ方（崩れたら、そのままコピーして送る）</h3>
+  <table class="fixes"><tbody id="fixes"></tbody></table>
+</section>
+<div class="toast" id="toast">コピーしました</div>
+
+<script>
+'use strict';
+
+/* どのプロンプトにも差し込む共通の条件 */
+const COMMON = [
+  '条件:',
+  '- 1つの HTML ファイルで完結させる（CSS と JavaScript も同じファイルに書く）',
+  '- 外部の読み込みをしない（CDN、Google Fonts、外部画像、fetch はすべて禁止）。ネットに繋がらない PC で動くこと',
+  '- ライブラリを使わない。グラフや図は SVG か canvas を素の JavaScript で描く',
+  '- 画面は 16:9。1920×1080 の固定レイアウトを作り、transform: scale() でウィンドウに合わせて拡大縮小する',
+  '- 背景は暗い色（#0b0f17 前後）。文字は日本語。フォントは "Hiragino Sans", "Yu Gothic UI", "Meiryo", sans-serif',
+  '- アニメーションは requestAnimationFrame で回し、経過時間（dt）で動かす',
+  '- 説明は不要。HTML のコードだけを返す',
+].join('\n');
+
+/* 技法の一覧。prompt の {{キー|既定値}} は入力欄になる。{{共通}} は COMMON に置き換わる。
+   slide は見本集（index.html）のスライド id。番号は SLIDE_NO で引く */
+const TECHS = [
+  { slide: 'terminal', cat: '演出', title: 'ターミナル風の自己紹介',
+    image: 'macOS のターミナルに、自己紹介のコマンドが1文字ずつ打たれ、経歴や似顔絵が流れ出る。',
+    prompt: `発表の冒頭で、ターミナルに自己紹介が「打ち込まれていく」演出を見せたいです。
+画面の中央に macOS のターミナルの窓（左上に赤・黄・緑の丸ボタン）があり、緑の「➜」の後ろに whoami が1文字ずつ打たれ、名前が出ます。
+続いて cat career.log で経歴が1行ずつ流れ、./face.sh で紫に光るアスキーアートの似顔絵が上から描かれ、
+最後に ls skills/ と echo $MOTTO が出て、カーソルが点滅して止まります。打鍵の速さは人間のように 45〜135ms で揺らしてください。
+
+内容:
+- 名前と肩書き: {{名前と肩書き|山田 太郎 / データ分析・業務改善エンジニア}}
+- 経歴（年と出来事）: {{経歴|2014 情報工学科 卒業、2014 SIer で業務システム開発、2019 事業会社で売上の可視化、2022 機械学習で需要予測（在庫 18% 削減）、2025 生成 AI で報告書を自動化}}
+- スキル: {{スキル|python, sql, javascript, statistics, facilitation}}
+- 座右の銘: {{座右の銘|小さく作って、早く見せる}}
+
+1つの HTML ファイルで作ってください。
+- 台本は SCRIPT 配列（cmd / out / lineDelay）にまとめ、内容を差し替えやすくする
+- 窓をクリックすると最後まで一気に表示し、終わった後のクリックで最初から再生する
+{{共通}}`,
+    checks: ['打鍵の間隔が一定でない（機械的に見えない）', '似顔絵の行がずれていない（等幅フォントで white-space: pre）', '出力が増えても窓からはみ出さず、下へスクロールする', 'クリックで最後まで飛ぶ'] },
+
+  { slide: 'race', cat: 'シミュレーション', title: 'モデル比較シミュレーション',
+    image: '正確さの違う5つの AI モデルが同じ問題を同時に解く。正確なモデルほど少ない推論回数で正解する。',
+    prompt: `「性能の高い AI ほど、少ない試行で正解にたどり着く」ことを、動く映像のように見せたいです。
+
+画面には5つのパネルが横に並び、5つのモデルが同じ{{最初の題材|ナンプレ}}を同時に解いていきます。
+上位モデルは正しい手が次々に緑で入り、少ない回数で完成して枠が光り「🏆 1位 17 回で正解」と出ます。
+下位モデルは赤い誤りを何度も入れては見直して消し、ずっと時間がかかるか、上限回数で打ち切られます。
+タブで題材を「{{題材|ナンプレ、迷路の探索、文章の生成、巡回セールスマン}}」と切り替えると、同じ5モデルの差が別の形で見えます。
+
+中身は本物の AI ではなく、シミュレーションです。各モデルは2つの数だけで振る舞いが決まります。
+- モデル: {{モデル|Frontier-XL（p=0.97, k=3）、Pro-L（0.90, 2）、Standard-M（0.80, 2）、Lite-S（0.65, 1）、Nano-XS（0.50, 1）}}
+- p = 1手が正しい確率、k = 1回の推論で進める手数。誤りに気づいて直す確率も p に比例させる
+- 0.38 秒ごとに全パネルが1ステップ進む。画面上部に「推論ステップ #n」
+- 乱数はシード付き（mulberry32）にし、同じ問題なら毎回同じ結果になるようにする
+- 再生/一時停止、速度 ×1/×2/×4、最初から、別の問題（シード+1）のボタンを付ける
+
+1つの HTML ファイルで作ってください。
+{{共通}}`,
+    checks: ['同じ問題なら、何度再生しても同じ回数になる', '10問ほど試して、ほぼ毎回いちばん正確なモデルが最少回数で正解する', '5パネルを同時に動かしてもカクつかない', '誤りが見える（赤いマス・行き止まり・取り消し線・遠回り）'] },
+
+  { slide: 'sliders', cat: 'グラフ・図解', title: 'スライダーで変わるグラフ',
+    image: '右のスライダーを動かすと、左のグラフと数値がその場で変わる。',
+    prompt: `会議で「この前提を変えるとどうなるか」をその場で見せたいです。
+右側のスライダーで{{主に動かす値|年利}}を動かすと、左のグラフの曲線が持ち上がったり下がったりし、大きな数字もリアルタイムに変わる画面です。
+タブで次の題材を切り替えられるようにしてください。
+{{題材|1. 複利と積立（初期投資・毎月の積立・年利・年数 → 評価額と元本の推移）
+2. 損益分岐点（固定費・単価・変動費・想定販売数 → 売上線と総費用線、分岐点に印）
+3. 価格と売上・利益（最大需要・価格感応度・原価 → 価格ごとの売上と利益の山、利益最大の価格に印）}}
+
+- スライダーを動かすたびに計算し直して SVG を描き直す
+- 縦軸は必ず 0 を含め、目盛りはきりのいい値（1・2・2.5・5 の倍数）にする
+- 金額は「1,153万円」「1.2億円」の形に整える
+- 「▶ 自動で動かす」を押すと主なスライダーが最小→最大→元の値まで自動で動く。開いた直後にも1回動かす
+
+1つの HTML ファイルで作ってください。
+{{共通}}`,
+    checks: ['スライダーを最小・最大にしてもグラフが枠からはみ出さない', '縦軸が 0 から始まる', '数値カードの値がグラフの印と一致する'] },
+
+  { slide: 'barrace', cat: 'グラフ・図解', title: '棒グラフのレース',
+    image: '年が進むにつれて棒が伸び縮みし、順位が入れ替わると棒が滑って並び替わる。',
+    prompt: `{{項目|8つの製品}}の{{値の名前|売上}}が年ごとに伸び縮みし、順位が入れ替わるたびに棒がするすると上下に滑って並び替わる「バーチャートレース」をスライドで見せたいです。
+右下には今の年が大きく薄い文字で出ています。
+
+- 期間: {{期間|2015〜2026年}}
+- データ: {{データ|ダミーでよい。シード付き乱数で作り、途中で順位が入れ替わるようにする}}
+- 年と年の間は easeInOut で補間し、1年を 1.1 秒で進める
+- 毎フレーム値で並べ替え、各行の位置を目標へなめらかに近づける（瞬間移動させない）
+- 棒の長さは今の最大値に対する割合。棒の右に値
+
+1つの HTML ファイルで作ってください。
+{{共通}}`,
+    checks: ['順位が入れ替わるとき、行が瞬間移動せずに滑る', '最後の年で止まる'] },
+
+  { slide: 'codetype', cat: '演出', title: 'コードが書かれていく',
+    image: 'エディタにコードが数行ずつ打ち込まれ、説明中の行だけが明るい。右に段階と説明。',
+    prompt: `勉強会で、コードが目の前で書かれていくように見せながら説明したいです。
+左のエディタ風の枠（タブ名・行番号つき）にコードが数行ずつタイプされ、いま話している行だけが明るく光ります。
+右側には「1. 入口」「2. 準備」…の段階の一覧と、説明のカードが出ます。
+
+- コード:
+{{コード|function simulate(initial, monthly, ratePct, years) {
+  let value = initial;
+  const history = [];
+  for (let m = 1; m <= years * 12; m++) {
+    value = value * (1 + ratePct / 100 / 12) + monthly;
+    if (m % 12 === 0) history.push(Math.round(value));
+  }
+  return history;
+}
+}}
+- 段階（行の範囲と説明）: {{段階|1-1 入口: 引数を受け取る / 2-3 準備: 評価額と記録の配列 / 4-7 本体: 毎月利息を付けて積み立て、12か月ごとに記録 / 8-9 戻り値}}
+- 各段階で新しい行を1文字ずつ打ち、その範囲を背景色と左の線で強調する。前の段階の強調は消す
+- キーワード・関数名・数値・文字列・コメントを正規表現で色分けする
+- 3.2 秒で次の段階へ。クリックで打鍵を飛ばして次へ
+
+1つの HTML ファイルで作ってください。
+{{共通}}`,
+    checks: ['前の段階の強調が残っていない', '色分けで文字が欠けていない（記号や日本語のコメントも出る）'] },
+
+  { slide: 'compare', cat: 'グラフ・図解', title: '前後比較スライダー',
+    image: '改善前と改善後の図を重ね、つまみを左右に動かして見比べる。',
+    prompt: `「グラフの見せ方を変えるだけで、伝わり方がこんなに違う」と示したいです。
+左に、色だらけで補助線の多い昔ながらの棒グラフ。右に、結論が見出しになった見やすい棒グラフ。
+2枚は同じ大きさで重なっていて、真ん中の白いつまみを左右にドラッグすると境目が動きます。
+
+- データ: {{データ|A部門 今年 820 前年 760 / B部門 1190 / 900 / C部門 640 / 700 / D部門 980 / 1010 / E部門 450 / 520}}
+- 改善後の見出し: {{結論|B部門が前年比 +32% で全社を牽引}}
+- 改善後: 注目の1本だけ色を付け、値は棒の右に直接書き、前年は細い縦線で示す
+- 上の図は clip-path: inset(0 0 0 X%) で切り抜く。ドラッグは pointerdown / pointermove と setPointerCapture で行い、位置は getBoundingClientRect() から割合で求める
+- 開いた直後に、つまみが右端→左端→中央へ自動で動く
+
+1つの HTML ファイルで作ってください。
+{{共通}}`,
+    checks: ['全画面にしても、ドラッグの位置とつまみがずれない', '改善後のラベルが右端で切れていない'] },
+
+  { slide: 'zoom', cat: '演出', title: 'ズームで掘り下げる',
+    image: '1枚の大きな図の上でカメラが寄っていき、全体から細部へ掘り下げる。',
+    prompt: `全体の図から始めて、カメラがすーっと寄っていき、最後に結論の細部まで掘り下げる説明をしたいです。
+最初は小さすぎて読めなかった文字が、寄ると読めるようになる、という体験にしてください。
+
+- 階層: {{階層|全社（営業部・製造部・物流部・管理部）→ 製造部（工程A〜D）→ 工程B（設備1〜3）→ 設備2（停止の内訳）}}
+- 最後に見せる結論: {{結論|停止の最大要因は段取り替え（38時間）。短縮が最優先}}
+- 1枚の大きな SVG に入れ子で描き、奥ほど文字を小さくする（40 → 22 → 9 → 3 くらい）
+- ショットの配列 [{x, y, w, 説明}] を作り、SVG の viewBox を補間してカメラを動かす。幅は対数で補間し、拡大の速さを一定に見せる
+- 3.2 秒ごと、またはクリックで次へ。最後の後は全体に戻る。右上に今のショットの説明
+
+1つの HTML ファイルで作ってください。
+{{共通}}`,
+    checks: ['最初のショットで図全体が枠に収まっている', '最後のショットで細部の文字が全部読める'] },
+
+  { slide: 'flow', cat: 'シミュレーション', title: '粒子で流れを見せる',
+    image: '1件を1つの点として工程図の上を流し、手作業の工程に点がたまる。自動化率を上げると詰まりが消える。',
+    prompt: `「{{詰まっている工程|手作業の確認}}がボトルネックになっている」ことを、数字ではなく動きで見せたいです。
+案件を1つの点として工程図の上に流すと、その工程の前に赤い点がどんどんたまっていきます。
+右上の「自動化率」を 30% から 80% に上げると、たまっていた点が流れ出し、詰まりが消えます。
+
+- 工程: {{工程|受付 → 振り分け →（自動処理 または 手作業で確認）→ 完了}}
+- 1秒に 5.5 件生まれ、線の上を進む。振り分けで「自動化率」の確率で自動へ
+- 手作業は担当2名、1件の処理時間は平均 1.1 秒の指数分布。空きがなければ窓口の左に点を積み上げる
+- 右上に、自動化率のスライダー、待ち件数、直近60件の平均所要時間、完了件数（0.25 秒ごとに更新）
+- canvas で描く
+
+1つの HTML ファイルで作ってください。
+{{共通}}`,
+    checks: ['自動化率 30% で待ちが増え続け、80% で減っていく', '工程の名前が右の数値欄に隠れていない'] },
+
+  { slide: 'queue', cat: 'シミュレーション', title: '待ち行列シミュレーション',
+    image: '人が来て並び、窓口で処理されて帰っていく。窓口を増やすと行列が縮む。',
+    prompt: `「{{問い|窓口を1つ増やすと、行列はどれだけ減るか}}」をその場で試せる画面を作りたいです。
+人が左から来て並び、空いた窓口に進み、処理が終わると右へ帰っていきます。
+窓口2つでは行列が伸び続け、3つにすると落ち着く、という様子が見えるようにしてください。
+
+- 画面の1秒を1分として扱う。来る間隔も処理時間もランダム（指数分布）。1窓口は1分に {{処理能力|1.2}} 人を処理する
+- スライダー: 1分あたりの来客（1〜8、初期 3）、窓口の数（1〜6、初期 2）
+- 3分以上待っている人は赤くする
+- 右に、稼働率、待っている人数、平均待ち（実測・直近40人）、平均待ち（理論値・アーラン C 式。稼働率 100% 以上なら「行列が伸び続ける」）
+- 下に、待ち人数の推移（直近90秒）の折れ線
+
+1つの HTML ファイルで作ってください。
+{{共通}}`,
+    checks: ['稼働率が 100% を超えると、理論値の欄が「伸び続ける」になる', '窓口を減らしても、処理中の人が消えない'] },
+
+  { slide: 'cube3d', cat: 'グラフ・図解', title: 'CSS 3D で回る構成図',
+    image: '構成の層が半透明の板として立体的に重なり、ゆっくり回る。ボタンで層の間が開く。',
+    prompt: `システムの構成を、{{層|画面層・API 層・データ層}}の3枚のガラス板が浮かんでいるように見せたいです。
+板はゆっくり回り、ボタンを押すと上下に離れて、それぞれの層の部品が見えるようになります。マウスでつかんで回すこともできます。
+
+- 各層の部品: {{部品|画面層: ダッシュボード・入力フォーム・通知 / API 層: 認証・集計 API・検索 / データ層: 売上DB・顧客DB・操作ログ}}
+- perspective を付けた舞台に transform-style: preserve-3d。層は translateZ で重ね、ボタンで間隔を 18px → 130px に広げる（0.9 秒）
+- 板は層ごとの色の枠と光。部品のチップは translateZ(30px) で浮かせる
+- ドラッグで回転。1.5 秒触らなければゆっくり自動で回る
+- 要素は少なく保つ（面が100枚を超えると重くなる）
+
+CSS の 3D 変形だけで、1つの HTML ファイルで作ってください。
+{{共通}}`,
+    checks: ['層を離したとき、見出しに重ならない', '層の色が実際に付いている（CSS 変数は style.setProperty で入れる）'] },
+
+  { slide: 'kpi', cat: '演出', title: '数え上がる KPI',
+    image: 'KPI カードが時間差で現れ、数字が 0 から数え上がる。棒グラフが1本ずつ伸び、最後に一言。',
+    prompt: `業績報告の最初のスライドで、数字が「ドン」と出るのではなく、0 から数え上がって止まり、
+続けて月別の棒が左から1本ずつ伸びて、最後に一言のまとめが出る、という見せ方にしたいです。
+
+- KPI 4つ: {{KPI|売上 12.4億円（前期比 +8.2%）/ 受注件数 3,482件（+12.0%）/ 解約率 2.1%（−0.4pt）/ 顧客満足度 4.6（+0.2）}}
+- 月別の値（12か月）: {{月別|62, 70, 68, 75, 81, 79, 88, 92, 90, 97, 118, 104}}
+- 注目する月: {{注目の月|11月}}（この棒だけ色を変える）
+- まとめの一言: {{まとめ|11月に月間売上が過去最高（1.18億円）。年末商戦の前倒しが効いた。}}
+- カードは 250ms ずつずらして下から出す。数字は 1.6 秒かけて easeOut で数え上げる。各カードに小さな折れ線を左から描く
+- 棒は 110ms ずつずらして伸ばす。数字は等幅フォントにして、桁が変わっても幅が揺れないようにする
+
+1つの HTML ファイルで作ってください。
+{{共通}}`,
+    checks: ['数え上げの途中でカードの幅が揺れない', '開き直すと最初から再生される'] },
+
+  { slide: 'timeline', cat: 'グラフ・図解', title: '年表とガントチャート',
+    image: '年表は線が伸びるにつれて出来事が現れる。ガントは棒が順に伸び、遅れた工程だけ赤くなる。',
+    prompt: `時間の流れを、左から順に描いていく見せ方をしたいです。タブで「年表」と「ガントチャート」を切り替えます。
+
+年表: 横に1本の線が左から右へ 4 秒かけて伸び、線が通り過ぎた年の出来事が、上下交互にふわっと現れます。
+- 出来事: {{出来事|2015 創業 / 2017 初の自社製品 / 2019 拠点を拡大 / 2020 リモート移行 / 2022 黒字化 / 2024 生成 AI 導入 / 2026 海外展開}}
+
+ガント: 工程の棒が上から順に伸び、予定より長くかかった工程だけ、予定の終わりから先が赤く伸びて「+2週 遅れ」と出ます。最後に「今日」の黄色い縦線が引かれます。
+- 工程（名前・開始週・予定週数・実績週数）: {{工程|要件定義 0 3 3 / 基本設計 2 3 4 / 画面開発 5 4 4 / API 開発 5 5 7 / データ移行 8 3 3 / 結合テスト 10 3 4 / 受入テスト 13 2 2 / 本番切替 15 1 1}}
+- 今日: {{今日|第11週}}
+- 予定は点線の枠、実績は塗りの棒にする
+
+SVG で、1つの HTML ファイルで作ってください。
+{{共通}}`,
+    checks: ['年表の引き出し線が文字に重ならない', '遅れた工程だけが赤く、遅れの週数が正しい'] },
+
+  { slide: 'quiz', cat: '演出', title: 'クイズで問いかける',
+    image: '4択を押すと正解が開き、会場の予想の割合が棒で伸び、解説が出る。',
+    prompt: `発表の途中で聞き手にクイズを出し、考えてもらってから答えを見せたいです。
+4つの選択肢のどれかを押すと、正解が緑、選んだ不正解が赤になり、各選択肢の後ろで「会場の予想」の割合の棒が伸びて、下に解説がふわっと出ます。「次の問題 →」で進みます。
+
+- 問題: {{問題|Q1 同じ誕生日の2人がいる確率が 50% を超えるのは何人？ 23人(正解)/50人/100人/183人 予想 14/31/28/27% 解説: 2人の組が 253 通りあるため
+Q2 毎日 1% ずつ良くなると1年後は何倍？ 1.4倍/3.7倍/12倍/37.8倍(正解) 予想 22/35/26/17% 解説: 1.01 の 365 乗
+Q3 1 から 100 まで足すと？ 4,950/5,050(正解)/5,100/10,000 予想 24/52/15/9% 解説: 101 が 50 組}}
+- 会場の予想の割合は、事前に決めた数字を使う（集計はしない。ネットも使わない）
+- 選んだ後は選択肢を押せなくする。割合の棒は 1.2 秒かけて伸ばす
+
+1つの HTML ファイルで作ってください。
+{{共通}}`,
+    checks: ['2回押しても割合が二重に伸びない', '最後の問題の後、最初に戻れる'] },
+
+  { slide: 'sketch', cat: '演出', title: '手描き風の図解',
+    image: 'ホワイトボードに描くように、少しゆがんだ線で図が順に描かれ、描き終わっても線が小さく震える。',
+    prompt: `ホワイトボードにペンで描いていくように、図を順に育てていく見せ方をしたいです。
+線は定規で引いたようなまっすぐではなく、少しゆがんで2回なぞったように見え、手で引くように順番に描かれます。
+描き終わった後も、線が小さく震え続けて手描きらしさが残ります。
+
+- 図の中身: {{図|左の四角「問い合わせが 月 400 件」→ 矢印 → 中央の楕円「原因: 手順書が古い」→ 矢印 → 右の四角「対策: 動く手順書」。最後に赤い下線と「ここが本丸！」の矢印}}
+- 線はシード付き乱数で少しだけゆがめた SVG の path（2点を、中点をずらした2本の曲線で結ぶ）。楕円は半径をゆるやかに揺らして、終わりを少し重ねる
+- path に pathLength=1 を付け、stroke-dashoffset を 1 → 0 にして描く
+- 描き終わったら 0.16 秒ごとに path を引き直して震わせる
+- 背景は暗いボードに薄い点の格子
+
+1つの HTML ファイルで作ってください。
+{{共通}}`,
+    checks: ['楕円がギザギザすぎない（ゆるやかに揺れている）', '文字は図形を描き終わってから出る'] },
+
+  { slide: 'particletext', cat: '圧倒系', title: '粒子で文字を組み立てる',
+    image: '数千の点が舞い、キーワードの形に集まる。次の言葉へ崩れて組み替わる。マウスの近くの点は逃げる。',
+    prompt: `数千の光る点が画面に舞い、それが集まってキーワードの形になる、圧倒されるような演出を作りたいです。
+クリックすると点が一度はじけて、次の言葉の形に組み替わります。マウスを近づけると、近くの点が逃げます。
+
+- 言葉: {{言葉|DATA、分析、意思決定、IMPACT}}
+- 点の数: {{点の数|3600}}
+- 見えない canvas に言葉を太字で大きく描き、getImageData で塗られた画素から 6px おきに点の目標座標を取る
+- 点はばねで目標へ引き寄せ、減衰させる。余った点は画面全体に薄く散らす
+- 色は左から右へ青→紫のグラデーション。毎フレーム半透明で塗りつぶして残像を出す
+- 4.5 秒ごとに自動で次の言葉へ
+
+canvas で、1つの HTML ファイルで作ってください。
+{{共通}}`,
+    checks: ['漢字の言葉でも形が読める', '点が多くてもカクつかない（重ければ点の数を減らす）'] },
+
+  { slide: 'unitdots', cat: '圧倒系', title: '1人を1点で見せる',
+    image: '1000個の点が、全体 → 部門別 → 年代別 → 満足度別へ流れるように並び替わる。',
+    prompt: `割合ではなく「人数」として実感してもらうために、1人を1つの点で表したいです。
+画面に {{人数|1000}} 個の点が並び、タブを切り替えると、同じ点たちが流れるように移動して、別の切り口のグループに並び替わります。
+
+- 切り口: {{切り口|全体 → 部門別（営業 30%・製造 35%・物流 15%・管理 10%・開発 10%）→ 年代別（20代〜60代）→ 満足度別（とても不満〜とても満足）}}
+- データはダミー。シード付き乱数で、切り口ごとに偏りが見えるように作る
+- グループごとに点を積み上げた単位ヒストグラムにし、下にグループ名と「313 人（31.3%）」を出す
+- 移動は 1.6 秒の easeInOut。点ごとに少しずつ出発を遅らせて、流れるように見せる
+- 満足度別では色を赤→緑にする。それ以外は部門の色
+- 4.5 秒ごと、またはクリックで次の切り口へ
+
+canvas で、1つの HTML ファイルで作ってください。
+{{共通}}`,
+    checks: ['グループ名と人数が画面の下で切れていない', 'どの切り口でも合計が人数と一致する'] },
+
+  { slide: 'nn', cat: '圧倒系', title: 'その場で学習するニューラルネット',
+    image: '小さなネットが目の前で本当に学習し、判定の境界と線の太さ（重み）が変わっていく。',
+    prompt: `「AI が学習する」とはどういうことかを、目の前で本当に計算して見せたいです。
+左に2色の点が散らばった四角があり、背景の色（AI の判定）が、最初はでたらめなのに、数秒で点の色の分かれ目に沿ってきれいに塗り分けられていきます。
+中央にはネットワーク図があり、線の太さ（重み）が学習につれて変わります。右に正解率と、損失が下がっていくグラフ。
+
+- ネットワーク: {{構造|入力 2 → 隠れ層 8 → 隠れ層 8 → 出力 1}}。隠れ層は tanh、出力は sigmoid、損失は交差エントロピー
+- 学習は確率的勾配降下。順伝播と逆伝播を素の JavaScript で書く（ライブラリなし）
+- データ: {{データ|XOR（市松）、円、渦巻き}} をタブで切り替える。各 240 点
+- 1フレームの学習回数は、5 秒前後で解けるくらいに絞る（速すぎると学習の過程が見えない）
+- 判定の濃淡は 60×60 の画素に書いてから引き伸ばす（fillRect を 3600 回呼ぶと重い）
+- 「最初から学習」ボタン
+
+1つの HTML ファイルで作ってください。
+{{共通}}`,
+    checks: ['XOR が数秒で正解率 95% を超える', '学習の途中経過が目で追える速さになっている', '60fps 近く出ている'] },
+
+  { slide: 'fractal', cat: '圧倒系', title: '無限ズームのフラクタル',
+    image: 'マンデルブロ集合の境界へ、延々と潜っていく。',
+    prompt: `「寄っても寄っても、新しい模様が現れる」体験で聞き手を引き込みたいです。
+マンデルブロ集合の境界の1点へ、カメラがずっと拡大し続け、渦や触手のような模様が次々に現れます。
+
+- 寄っていく点: {{座標|-0.743643887037151, 0.131825904205330}}
+- 拡大の速さ: {{速さ|1秒に約 1.7 倍}}
+- 色は反復回数から滑らかに付け（smooth coloring）、パレットは青〜オレンジ
+- 重くならない作り方にする: 倍率が2倍になるごとに1枚だけ計算し（528×222 程度）、その間はその画像を拡大して見せる。次の1枚は毎フレーム 7ms までずつ裏で計算し、間に合わなければ拡大を待つ
+- 2 の 40 乗倍で計算の精度が尽きるので、そこで最初に戻る
+- 左下に倍率を表示。クリックで一時停止
+
+canvas で、1つの HTML ファイルで作ってください。
+{{共通}}`,
+    checks: ['深く潜ってもカクつかない', '模様がぼやけすぎない', '精度が尽きると最初に戻る'] },
+
+  { slide: 'city3d', cat: '圧倒系', title: '3D の棒グラフ都市',
+    image: '売上が立体のビル群として地面から伸び、ゆっくり回る。上位だけ青く光る。',
+    prompt: `数字を「ビルの高さ」にして、都市のように見せたいです。
+地面の上に5×5のビルが並び、地面から順に伸びていきます。上位3つは青く光り、屋上に値が出ます。
+全体は斜め 45° を中心にゆっくり左右に振れ、マウスでつかんで回したり見下ろす角度を変えたりできます。
+
+- 行と列: {{行と列|行 = 地域（北海道・東北・関東・中部・関西）、列 = 支店}}
+- 値: {{値|ダミーでよい。20〜130 億の範囲}}
+- canvas 2D に自前で投影して描く（回転と見下ろし角から画面座標を計算し、奥のビルから順に描く）。手前ほど少し大きくして遠近を出す
+- 面ごとに明るさを変えて立体感を出す（上面が最も明るい）
+- CSS 3D は使わない（ビル 25 本 × 5 面の要素を 3D 変形すると、GPU の無い PC で極端に重くなる）
+
+1つの HTML ファイルで作ってください。
+{{共通}}`,
+    checks: ['どの角度でも、奥のビルが手前のビルの上に描かれていない', '地面の端が枠で切れていない'] },
+
+  { slide: 'livecode', cat: '演出', title: 'ライブコーディング',
+    image: '左のコードを書き換えると、右のグラフがすぐ変わる。',
+    prompt: `聞き手の前でコードの数字を1つ変えて、結果がその場で変わる様子を見せたいです。
+左にコードを書ける欄、右にグラフがあり、コードを書き換えると 0.25 秒後に右のグラフが描き直されます。
+
+- 最初に入れておくコード（数の配列を return する）: {{最初のコード|const data = [];
+for (let i = 0; i < 40; i++) {
+  data.push(Math.sin(i / 4) * 30 + 50);
+}
+return data;}}
+- 切り替えられるお手本: {{お手本|サイン波、複利、ランダムウォーク、フィボナッチ}}
+- 書いたコードは new Function で実行する。配列でない・数でない・2000 点を超えるときはエラーとして赤字で出し、前のグラフを残す
+- 成功したら「✓ 40 点を描画（0.8 ms）」と出す
+- Tab キーで空白2つを入れる
+- グラフは SVG の棒と折れ線。縦軸は 0 から
+
+1つの HTML ファイルで作ってください。
+{{共通}}`,
+    checks: ['わざと誤ったコードを入れても画面が壊れず、前のグラフが残る', 'Tab キーでフォーカスが外れない'] },
+
+  { slide: 'forcegraph', cat: 'グラフ・図解', title: '関係図が自分で整列する',
+    image: '点がばねでつながり、揺れながら自然に並ぶ。つかんで動かすと全体が追いかけてくる。',
+    prompt: `組織や仕組みの関係を、物理の力で自然に並ぶ図として見せたいです。
+最初はばらばらに散った点が、ばねで引き合い、ぶつからないよう反発しながら、揺れつつ落ち着いていきます。
+点をマウスでつかんで動かすと、つながった点が追いかけてきます。
+
+- 中心となる点（ハブ）: {{ハブ|経営企画・営業・製造・物流・開発・総務}}
+- 各ハブに担当者の小さな点を {{担当の数|4}} つずつつなぎ、ハブどうしと、部署をまたぐ連携を数本つなぐ
+- 力: すべての点どうしが距離の2乗に反比例して反発、線はばね（自然長あり）、画面の中心へ弱く引く、毎フレーム減衰
+- 「ばらばらにする」ボタン
+
+canvas で、1つの HTML ファイルで作ってください。
+{{共通}}`,
+    checks: ['落ち着いた後、ハブどうしが重ならない', 'つかんだ点が指から離れない'] },
+
+  { slide: 'morphtext', cat: '演出', title: '言葉が変形する文字演出',
+    image: '「課題」が乱れた文字を経て「解決策」へ、左から順に確定して組み替わる。',
+    prompt: `ビフォー・アフターを一語で伝えるために、言葉そのものを変化させて見せたいです。
+画面中央に大きく「課題」と出て、少しすると文字がランダムな記号やカタカナにざわざわと乱れ、左から1文字ずつ「解決策」に確定していきます。
+確定した文字は青→紫→ピンクのグラデーションになり、下に「BEFORE」「AFTER」と小さく出ます。
+
+- 言葉の組: {{言葉の組|課題→解決策、データ→意思決定、属人化→仕組み化、手作業→自動化、点→線、報告→提案}}
+- 乱れる文字: {{乱れる文字|カタカナ・数字・記号（#$%&*）・▓▒░}}
+- 乱れる時間は約 0.9 秒、その後 1 文字あたり 0.14 秒ずつ確定。長さが違う言葉どうしでも崩れないようにする
+- クリックで次の組へ。下に今が何組目かの点を出す
+
+1つの HTML ファイルで作ってください。
+{{共通}}`,
+    checks: ['文字数の違う言葉どうしでもがたつかない', '確定した文字だけ色が付いている'] },
+
+  { slide: 'sankey', cat: 'フロー図', title: 'サンキー図',
+    image: 'お金や人の流れを帯の太さで見せる。配分を変えると帯がなめらかに太り・細り、帯の中を粒子が流れる。',
+    prompt: `{{流れるもの|予算}}の流れを、帯の太さで見せるサンキー図を作りたいです。
+左から右へ3列（{{列|財源 → 部門 → 用途}}）に縦長の棒が並び、間を帯がつなぎます。帯の太さは金額に比例し、帯の中を小さな光る点が左から右へ流れて、流れの向きが分かります。
+右のスライダーで配分を変えると、帯の太さと棒の長さがなめらかに変わります（瞬間的に切り替えない）。
+
+- 財源と金額: {{財源|本業売上 60 億、新規事業 25 億、補助金 15 億}}
+- 部門: {{部門|営業、開発、管理}}
+- 用途: {{用途|人件費、投資、外注、内部留保}}
+- スライダー: {{スライダー|開発への配分（10〜60%）、開発費のうち投資に回す割合（10〜80%）}}
+- 帯は3次ベジェ曲線で、出発側の棒の色を半透明にして塗る。各棒の横に名前と金額
+- 毎フレーム、今の値を目標の値へ少しずつ近づけ、配置を計算し直して描く
+- 粒子は帯の量に比例して生まれ、帯の中をベジェ曲線に沿って進む（canvas を SVG に重ねる）
+
+1つの HTML ファイルで作ってください。
+{{共通}}`,
+    checks: ['左の列と右の列で、合計の金額が一致している', 'スライダーを動かしても帯が棒からずれない'] },
+
+  { slide: 'swimlane', cat: 'フロー図', title: 'レーン付きの業務フロー',
+    image: '部署ごとのレーンに工程を置き、条件で決まる経路だけが光り、案件の点がその道を進む。',
+    prompt: `「誰が、どの順で、何をするか」を見せる業務フローを、条件で経路が変わる形で作りたいです。
+横長の帯（レーン）が部署ごとに並び、工程の箱がレーンの上に置かれています。
+右のボタンで条件を選ぶと、その案件が通る道だけが青く光りながら順に伸び、黄色い点が工程を1つずつ進みます。通らない工程は薄く表示されます。
+
+- レーン: {{レーン|顧客、営業、審査、経理}}
+- 工程（レーン・日数）: {{工程|申込（顧客）→ 受付（営業 1日）→ 見積作成（営業 2日）→ 金額判定（審査・ひし形）→ 部長承認（審査 2日）→ 役員承認（審査 3日）→ 与信確認（経理 3日）→ 請求書発行（経理 1日）→ 受領（顧客）}}
+- 条件と経路: {{条件|金額 100 万円以上なら部長承認、1,000 万円以上なら役員承認も通る。新規の取引先なら与信確認を通る}}
+- 右に、所要日数の合計・承認者の数・通る工程の数を出す
+- レーンをまたぐ線は、行き先のレーンの境目を横に走らせる（レーンの中央を走らせると、通らない工程の箱を横切って見える）
+- 線は pathLength=1 と stroke-dashoffset で、区間ごとに伸ばす
+
+SVG で、1つの HTML ファイルで作ってください。
+{{共通}}`,
+    checks: ['光る線が、通らない工程の箱を横切っていない', '条件を変えると日数の合計が変わる'] },
+
+  { slide: 'funnel', cat: 'フロー図', title: 'ファネル',
+    image: '点が上から落ち、段階ごとに通過できなかった点が横へこぼれて減っていく。歩留まりを変えると受注が変わる。',
+    prompt: `営業のファネルで「どの段階で、どれだけこぼれているか」を体感させたいです。
+上から光る点（1点 = 1人）が次々に落ちてきて、段階の境目を通るたびに、通過できなかった点が赤くなって横へはじき出されます。最後まで残った点は緑になります。
+右のスライダーで各段階の通過率を変えると、台形の幅と件数、最終の受注数がその場で変わります。
+
+- 段階: {{段階|訪問 → 資料請求 → 商談 → 見積 → 受注}}
+- 最初の件数: {{最初の件数|月 10,000 件}}
+- 通過率の初期値: {{通過率|資料請求率 8%、商談化率 40%、見積率 60%、受注率 30%}}
+- 受注の単価: {{単価|150 万円}}
+- 台形の幅は件数の 0.35 乗に比例させる（下の段が細くなりすぎて見えなくなるのを防ぐ）。数字は実数で横に出す
+- 右に「月の受注」「受注額」「+1pt 上げたとき最も受注が増える段階」を出す
+
+canvas で、1つの HTML ファイルで作ってください。
+{{共通}}`,
+    checks: ['表示の受注数が、最初の件数 × 各通過率の積と一致する', '点がはみ出さず、台形の中を落ちる'] },
+
+  { slide: 'table', cat: '表・ピボット', title: '動く表（並び替え・ヒートマップ・表→グラフ）',
+    image: '見出しを押すと行が滑って並び替わる。しきい値を超えたセルが光る。表の数字がそのまま棒グラフへ飛ぶ。',
+    prompt: `表を「読むもの」から「動かして気づくもの」に変えたいです。タブで3つの見せ方を切り替えます。
+
+1. 並び替え: 列の見出しを押すと、その列で行が並び替わります。行は瞬間移動せず、0.7 秒かけて上下に滑ります（行を絶対配置にし、top を transition で動かす）。触る前は数秒ごとに自動で列を変えて並び替えて見せる
+2. ヒートマップ: 行 × 列のセルを値で色分けし、しきい値のスライダーを動かすと、超えたセルだけ白い枠で光り、それ以外は暗くなる。超えたセルの数も出す
+3. 表からグラフへ: 項目名と数字の2列の表があり、ボタンを押すと数字のセルが飛んで棒の上に乗り、棒が下から伸びる。もう一度押すと表に戻る
+
+- 表のデータ: {{表のデータ|18 店舗 × 店舗・地域・売上・前年比・販売数・客単価（ダミー）}}
+- ヒートマップ: {{ヒートマップ|店舗 × 1〜12 月の売上}}
+- 表からグラフ: {{グラフにする列|地域別の年間売上}}
+- 数字は右寄せ・等幅フォント。前年比はプラスを緑、マイナスを赤
+
+1つの HTML ファイルで作ってください。
+{{共通}}`,
+    checks: ['並び替えで行が滑る（瞬間移動しない）', 'しきい値の数とセルの光り方が一致する'] },
+
+  { slide: 'pivot', cat: '表・ピボット', title: 'ピボット操作',
+    image: '行・列・値・集計方法を押すと、集計表と積み上げ棒グラフがその場で組み替わる。数字は前の値から数え変わる。',
+    prompt: `Excel のピボットテーブルのように、切り口を変えると集計表とグラフがその場で組み替わる画面を作りたいです。
+上にボタンが4組（行・列・値・集計方法）並び、押すたびに左の集計表と右の積み上げ棒グラフが作り直され、数字は前の値から新しい値へ数え変わります。
+
+- データ: {{データ|地域 6 × 店舗 3 × 商品 5 × 12 か月 = 1,080 行のダミー売上（売上・販売数）。シード付き乱数で作り、HTML に埋め込む}}
+- 行: {{行|地域、商品、月}}
+- 列: {{列|なし、商品、地域、月}}（行と同じ項目は選べない）
+- 値: 売上、販売数
+- 集計方法: 合計、平均、件数、構成比（総計に対する %）
+- 表には行の総計・列の総計・総計を付ける。平均の総計は「合計 ÷ 件数」で出し直す（セルの平均を平均しない）
+- グラフは積み上げ棒。平均のときは積み上げず横に並べる。列見出しに、グラフと同じ色の印を付けて凡例にする
+- 集計は画面の中で行う。外部のファイルは読まない
+
+1つの HTML ファイルで作ってください。
+{{共通}}`,
+    checks: ['合計のとき、総計がデータ全体の合計と一致する', '構成比のとき、総計が 100% になる', '総計の欄が「…」で切れていない'] },
+
+  { slide: 'drilldown', cat: '表・ピボット', title: 'ドリルダウン',
+    image: '棒を押すと、その内訳の棒に分かれていく。上の階層表示で戻れる。',
+    prompt: `全体の数字から、原因の場所まで掘っていく見せ方をしたいです。
+最初は{{最上位|地域}}別の棒グラフ。棒を押すと、その棒が横いっぱいに広がってから、内訳の棒に分かれて伸びていきます。
+上に「全社 › 関東 › 新宿店」のような階層表示があり、押すとその階層へ戻れます。
+
+- 階層: {{階層|全社 → 地域 → 店舗 → 商品}}
+- データ: {{データ|地域 6 × 店舗 3 × 商品 5 の年間売上（ダミー）}}
+- 棒は大きい順。棒の上に、親に対する割合（%）を出す
+- 一番下の階層の棒は色を変え、押せないようにする
+- 開いた直後に1回、最も大きい棒を自動で掘って見せる
+
+SVG で、1つの HTML ファイルで作ってください。
+{{共通}}`,
+    checks: ['子の棒の合計が、親の棒の値と一致する', '階層表示から戻ると、元の棒の数に戻る'] },
+
+  { slide: 'linked', cat: '表・ピボット', title: '表とグラフの連動',
+    image: '表の行に乗せると散布図の点が光り、散布図を囲むと表がその店舗だけに絞り込まれる。',
+    prompt: `表とグラフを「同じものの別の見え方」として連動させたいです。
+左に表、右に散布図があり、表の行にマウスを乗せると散布図の対応する点が大きく光り、点に乗せると表の行が光ります。
+散布図をドラッグして四角く囲むと、表がその中の店舗だけに絞り込まれ、それ以外の点は薄くなります。空いた所をクリックすると解除します。
+
+- 点: {{点|店舗 18 個（地域で色分け）}}
+- 横軸: {{横軸|年間売上}}
+- 縦軸: {{縦軸|前年比（−20%〜+30%、0% の線を太く）}}
+- 四隅の読み方を薄く書く: {{読み方|右下「大きいが伸びていない」、左上「小さいが伸びている」}}
+- 範囲選択の座標は、getBoundingClientRect() から割合で SVG の座標に戻す（画面が拡大縮小されていてもずれない）
+- 開いた直後に1回、「大きいが伸びていない」店舗を自動で囲んで見せ、数秒後に解除する
+
+SVG で、1つの HTML ファイルで作ってください。
+{{共通}}`,
+    checks: ['全画面にしても、囲んだ範囲と選ばれる点がずれない', '絞り込んだ件数が表の行数と一致する'] },
+];
+
+/* 見本集（index.html）でのスライド番号。index.html の並び順と一致させる */
+const SLIDE_NO = { terminal: 2, race: 3, sliders: 4, barrace: 5, codetype: 6, compare: 7, zoom: 8, flow: 9, queue: 10, cube3d: 11, kpi: 12,
+  timeline: 13, quiz: 14, sketch: 15, particletext: 16, unitdots: 17, nn: 18, fractal: 19, city3d: 20, livecode: 21, forcegraph: 22, morphtext: 23,
+  sankey: 24, swimlane: 25, funnel: 26, table: 27, pivot: 28, drilldown: 29, linked: 30 };
+
+const FIXES = [
+  ['外部の CDN やフォントを読んでいる', '外部の読み込み（CDN・Google Fonts・画像の URL）を全部やめ、素の JavaScript だけで書き直してください。ネットに繋がらない PC で動く必要があります。'],
+  ['全画面にすると崩れる', '1920×1080 の固定レイアウトで作り、transform: scale() でウィンドウに合わせて拡大縮小する方式に直してください。'],
+  ['文字や図が枠からはみ出す', '文字や図が枠からはみ出しています。1920×1080 の中に収まるよう、余白・文字サイズ・図の大きさを調整してください。'],
+  ['ドラッグの位置がずれる', 'ポインタの位置は getBoundingClientRect() から割合で求めるよう直してください。画面が拡大縮小されていても、つまみや点が指に追従するようにしてください。'],
+  ['PC によって速さが違う', 'アニメーションは requestAnimationFrame の経過時間（dt）で動かし、PC の速さやリフレッシュレートに左右されないようにしてください。'],
+  ['毎回結果が変わって困る', '乱数をシード付き（mulberry32）にして、同じシードなら毎回同じ結果になるようにしてください。'],
+  ['色が付かない', 'CSS 変数は element.style.setProperty(\'--c\', 色) で設定するよう直してください。style オブジェクトへの代入では入りません。'],
+  ['重くてカクつく', '重いので、計算は小さい解像度で行って拡大表示し、1フレームの計算を 8ms 以内に収めてください。毎フレーム DOM を大量に作り直している箇所もまとめてください。'],
+  ['3D が極端に重い', 'CSS 3D の要素が多すぎて重いので、canvas 2D に自前で投影して描く方式（奥から順に描く）に変えてください。'],
+  ['コードが途中で切れた', 'コードが途中で切れています。省略せずに、HTML 全体を最初から最後まで出し直してください。'],
+  ['開いても何も動かない', '開いても何も動きません。JavaScript のエラーが起きていそうな箇所を見直し、原因を直した完全な HTML を出し直してください。'],
+  ['勝手に機能を足された', '頼んでいない機能は外してください。最初に伝えた内容だけに絞ってください。'],
+  ['表の行が瞬間移動する', '並び替えのとき行が瞬間移動しています。各行を絶対配置にして、並び順に応じた top を CSS の transition で 0.7 秒かけて動かすよう直してください。'],
+  ['集計の合計が合わない', '集計表の総計が、データ全体の合計と一致しているか確かめ、合わなければ直してください。平均の総計は「全体の合計 ÷ 件数」で出し直してください。'],
+  ['線が関係ない箱を横切る', 'レーンをまたぐ線が、通らない工程の箱を横切っています。行き先のレーンの境目を横に走らせるよう、線の経路を直してください。'],
+  ['組み合わせで連動しない', '部品ごとに別々の状態を持っていて連動していません。状態を1つのオブジェクト state にまとめ、操作は state を変えてから全部品を描き直す形に直してください。'],
+];
+
+/* ───── ここから画面 ───── */
+const $ = (id) => document.getElementById(id);
+const el = (tag, attrs, ...ch) => {
+  const n = document.createElement(tag);
+  for (const k in attrs || {}) {
+    const v = attrs[k];
+    if (v == null || v === false) continue;
+    if (k === 'text') n.textContent = v;
+    else if (k.slice(0, 2) === 'on') n.addEventListener(k.slice(2), v);
+    else n.setAttribute(k, v === true ? '' : v);
+  }
+  for (const c of ch.flat()) if (c != null && c !== false) n.append(c);
+  return n;
+};
+const CATS = ['すべて', '演出', 'グラフ・図解', 'フロー図', '表・ピボット', 'シミュレーション', '圧倒系'];
+const RE = /\{\{([^{}|]+)(?:\|([\s\S]*?))?\}\}/g;
+
+let cat = 'すべて', cur = 0;
+/* 入力した値は技法ごとに覚えておく（このページを開いている間だけ） */
+const values = TECHS.map(() => ({}));
+
+function fieldsOf(t) {
+  const seen = new Map();
+  for (const m of t.prompt.matchAll(RE)) {
+    if (m[1] === '共通' || seen.has(m[1])) continue;
+    seen.set(m[1], m[2] || '');
+  }
+  return [...seen].map(([key, def]) => ({ key, def }));
+}
+function valueOf(i, key, def) { return key in values[i] ? values[i][key] : def; }
+
+/* 完成したプロンプトの文字列 */
+function build(i) {
+  return TECHS[i].prompt.replace(RE, (_, key, def) => (key === '共通' ? COMMON : valueOf(i, key, def || '')));
+}
+
+function renderList() {
+  const chips = $('chips');
+  chips.textContent = '';
+  for (const c of CATS) chips.append(el('button', { class: 'chip' + (c === cat ? ' on' : ''), text: c, onclick: () => { cat = c; renderList(); } }));
+  const list = $('list');
+  list.textContent = '';
+  TECHS.forEach((t, i) => {
+    if (cat !== 'すべて' && t.cat !== cat) return;
+    list.append(el('li', {}, el('button', { class: 'item' + (i === cur ? ' on' : ''), onclick: () => select(i) },
+      el('span', { class: 'no', text: String(SLIDE_NO[t.slide]).padStart(2, '0') }), el('span', { text: t.title }), el('span', { class: 'cat', text: t.cat }))));
+  });
+}
+
+function renderPreview() {
+  const t = TECHS[cur], pre = $('preview');
+  pre.textContent = '';
+  let last = 0;
+  for (const m of t.prompt.matchAll(RE)) {
+    pre.append(t.prompt.slice(last, m.index));
+    if (m[1] === '共通') pre.append(el('span', { class: 'common', text: COMMON }));
+    else pre.append(el('span', { class: 'fill', title: m[1], text: valueOf(cur, m[1], m[2] || '') }));
+    last = m.index + m[0].length;
+  }
+  pre.append(t.prompt.slice(last));
+  $('count').textContent = build(cur).length.toLocaleString() + ' 文字';
+}
+
+function select(i) {
+  cur = i;
+  const t = TECHS[i];
+  location.hash = t.slide;
+  renderList();
+  const n = SLIDE_NO[t.slide];
+  $('head').textContent = '';
+  $('head').append(
+    el('div', { class: 'title-row' }, el('h2', { text: t.title }), el('span', { class: 'badge', text: t.cat }),
+      el('a', { class: 'open-sample', href: 'index.html#' + n, target: '_blank', 'data-slide': t.slide, text: '見本を開く（' + n + '枚目）→' })),
+    el('p', { class: 'image', text: t.image }));
+  const box = $('fields');
+  box.textContent = '';
+  for (const f of fieldsOf(t)) {
+    const long = f.def.length > 34 || f.def.includes('\n');
+    const input = long ? el('textarea', { rows: Math.min(8, Math.max(2, f.def.split('\n').length + Math.floor(f.def.length / 70))) }) : el('input', { type: 'text' });
+    input.value = valueOf(i, f.key, f.def);
+    input.addEventListener('input', () => { values[i][f.key] = input.value; renderPreview(); });
+    box.append(el('div', { class: 'field' + (long ? ' wide' : '') }, el('label', { text: f.key }), input));
+  }
+  $('checks').textContent = '';
+  for (const c of t.checks) $('checks').append(el('li', { text: c }));
+  renderPreview();
+}
+
+/* クリップボードへ。使えない環境では選択してコピーする */
+async function copyText(text) {
+  try { await navigator.clipboard.writeText(text); return true; } catch (e) { /* 下の方法へ */ }
+  const ta = el('textarea', { style: 'position:fixed;left:-9999px;top:0' });
+  ta.value = text;
+  document.body.append(ta);
+  ta.select();
+  let ok = false;
+  try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+  ta.remove();
+  return ok;
+}
+let toastTimer = 0;
+function toast(msg) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('on');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('on'), 1600);
+}
+
+$('copy').addEventListener('click', async () => {
+  const ok = await copyText(build(cur));
+  const b = $('copy');
+  b.textContent = ok ? 'コピーしました' : 'コピーできませんでした';
+  b.classList.toggle('done', ok);
+  toast(ok ? 'プロンプトをコピーしました' : 'コピーできませんでした。プロンプトを選択してコピーしてください');
+  setTimeout(() => { b.textContent = 'コピー'; b.classList.remove('done'); }, 1600);
+});
+$('reset').addEventListener('click', () => { values[cur] = {}; select(cur); });
+
+for (const [when, text] of FIXES) {
+  const btn = el('button', { class: 'mini', text: 'コピー' });
+  btn.addEventListener('click', async () => {
+    const ok = await copyText(text);
+    btn.textContent = ok ? '✓' : '失敗';
+    btn.classList.toggle('done', ok);
+    toast(ok ? '直させ方をコピーしました' : 'コピーできませんでした');
+    setTimeout(() => { btn.textContent = 'コピー'; btn.classList.remove('done'); }, 1400);
+  });
+  $('fixes').append(el('tr', {}, el('td', { text: when }), el('td', { text: text }), el('td', {}, btn)));
+}
+
+/* ═════ 組み合わせ ═════ */
+
+const POS = {
+  左: '左（x 0〜1100）', 右: '右（x 1140〜1840）', 右上: '右上（x 1140〜1840, y 0〜520）', 右下: '右下（x 1140〜1840, y 540〜1080）',
+  左下: '左下（x 0〜900, y 540〜1080）', 上: '上半分（y 0〜520）', 下: '下半分（y 540〜1080）', 全面: '全面（場面を切り替えて順に見せる）',
+};
+const MARK = ['A', 'B', 'C'];
+
+/* おすすめの組み合わせ。parts は [スライド id, 配置]、main は主役の番号 */
+const PRESETS = [
+  { name: '前提を変えると、結果がこう変わる', parts: [['sliders', '左'], ['kpi', '右上'], ['compare', '右下']], main: 0,
+    goal: '年利が 1% 違うだけで、20 年後の評価額に大きな差がつく',
+    links: '- 左のスライダー（年利・年数）を動かすと、右上の KPI カード（最終評価額・運用益）が新しい値へ数え変わる\n- 右下の前後比較は「年利 3%」と「年利 4%」の2本の曲線。つまみで差を見比べる',
+    time: '- 0 秒: 左のグラフが描かれる\n- 1 秒: 右上の KPI が数え上がる\n- 2 秒: 右下の前後比較のつまみが自動で一往復する' },
+  { name: '全体から原因まで、1画面でたどる', parts: [['pivot', '左'], ['drilldown', '右上'], ['linked', '右下']], main: 0,
+    goal: '全社の数字から、伸びていない店舗と商品まで一気にたどり着ける',
+    links: '- 左のピボットで行を切り替えると、右上のドリルダウンの最上位がその項目になる\n- 右上で棒を押して掘り下げると、右下の散布図でその範囲の店舗だけが光る\n- 右下で散布図を囲むと、左のピボットがその店舗だけで集計し直される',
+    time: '- 0 秒: ピボットが表示される\n- 2 秒: ドリルダウンが最大の地域を自動で掘る\n- 4 秒: 散布図で該当する店舗が光る' },
+  { name: 'どこで詰まり、どう直せば流れるか', parts: [['swimlane', '上'], ['flow', '左下'], ['queue', '右下']], main: 0,
+    goal: '審査の工程が詰まりの原因で、担当を1人増やすと全体の日数が半分になる',
+    links: '- 上の業務フローで工程を押すと、左下の粒子の流れでその工程の前に点がたまる様子が出る\n- 右下の待ち行列で「窓口の数」を増やすと、左下の詰まりが解消し、上のフローの所要日数が短くなる',
+    time: '- 0 秒: 業務フローの経路が光りながら伸びる\n- 3 秒: 左下で点が流れ始め、審査の前にたまる\n- クリック: 窓口が1つ増え、詰まりが解消する' },
+  { name: '性能差が、順位として表れる', parts: [['race', '上'], ['barrace', '下']], main: 0,
+    goal: '正確なモデルほど、問題を重ねるごとに差が開いていく',
+    links: '- 上の5パネルで各モデルが正解するたびに、下の棒グラフのレースで「累計の正解数」の棒が伸び、順位が入れ替わる\n- 1問終わると自動で次の問題へ進み、5問続けて解く',
+    time: '- 0 秒: 上で1問目を解き始める\n- 正解のたび: 下の棒が伸びる\n- 5 問目の後: 下に最終順位が出る' },
+  { name: '自己紹介から、そのまま実演へ', parts: [['terminal', '左'], ['livecode', '右']], main: 0,
+    goal: '自己紹介の流れのまま、手を動かす人だと伝わる',
+    links: '- 左のターミナルで最後に ./demo.sh と打たれたら、右のライブコーディングの欄にコードが1文字ずつ打たれ、グラフが出る\n- その後は右のコードを手で書き換えられる',
+    time: '- 0〜10 秒: 左で自己紹介が流れる\n- 10 秒: ./demo.sh で右のコードが打たれ始める\n- 13 秒: 右のグラフが描かれる' },
+  { name: '予想させてから、人数で答え合わせ', parts: [['quiz', '左'], ['unitdots', '右']], main: 1,
+    goal: '「とても満足」は思ったより少ない。1,000 人中の人数で実感してもらう',
+    links: '- 左のクイズで「1,000 人のうち、とても満足は何人？」を出す\n- 選んだ瞬間に、右の点が満足度別に並び替わって答え合わせになる\n- 選んだ人数の高さに点線を引き、実際との差を見せる',
+    time: '- 0 秒: 左に問題、右は全体の 1,000 点\n- 選んだ後: 右が満足度別へ並び替わる\n- 2 秒後: 左に解説が出る' },
+  { name: '出来事と数字を、同じ時間軸で', parts: [['timeline', '上'], ['barrace', '下']], main: 1,
+    goal: '売上の順位が入れ替わった年に、何が起きたかが分かる',
+    links: '- 下の棒グラフのレースが年を進めると、上の年表の同じ年の出来事が光る\n- 上の年表の出来事を押すと、下のレースがその年に移る',
+    time: '- 0 秒: 上の年表の線が伸び始め、下のレースが同じ速さで進む\n- 出来事の年: レースを 1 秒止めて、出来事を強調する' },
+  { name: 'オープニングでテーマを打ち出す', parts: [['particletext', '全面'], ['morphtext', '全面']], main: 0,
+    goal: '今日のテーマは「データを意思決定に変える」',
+    links: '- 粒子が言葉の形に集まった後、はじけて画面中央の大きな文字になり、そこから文字演出が始まる',
+    time: '- 0〜5 秒: 粒子で「DATA」→「分析」\n- 5 秒: 粒子が消え、文字演出へ切り替わる\n- 以降: クリックで次の言葉の組' },
+  { name: '歩留まりを 1% 上げると、受注はいくら増えるか', parts: [['funnel', '左'], ['kpi', '右上'], ['sliders', '右下']], main: 0,
+    goal: '商談化率を 1pt 上げるだけで、年間の受注額が数千万円増える',
+    links: '- 左のファネルの通過率を動かすと、右上の KPI（月の受注・受注額・年間の増加額）が数え変わる\n- 右下のグラフは、各段階の通過率を 0〜+5pt 上げたときの年間受注額（段階ごとの線）。今の改善幅に印',
+    time: '- 0 秒: ファネルに点が落ち始める\n- 2 秒: 右上の KPI が数え上がる\n- 4 秒: 商談化率のスライダーが自動で +1pt 動く' },
+  { name: '課題の構造を描いてから、原因に寄る', parts: [['sketch', '全面'], ['zoom', '全面']], main: 0,
+    goal: '問い合わせが多い原因は、手順書の古さにある',
+    links: '- 手描きで「課題 → 原因 → 対策」を描き終えたら、「原因」の楕円へカメラが寄り、その中に手描き風で書かれた細かい内訳が読めるようになる',
+    time: '- 0〜6 秒: 手描きで図が育つ\n- クリック: 原因へズーム\n- もう一度クリック: 全体へ戻る' },
+];
+
+const combo = { parts: [['sliders', '左'], ['kpi', '右上'], ['compare', '右下']], main: 0, kind: 'bulk', preset: 0 };
+const techOf = (id) => TECHS.findIndex((t) => t.slide === id);
+
+/* 部品として差し込む中身: 共通の条件と「1つの HTML ファイルで作ってください」の行は外す */
+function partBody(id) {
+  const i = techOf(id);
+  return build(i).replace(COMMON, '').split('\n').filter((l) => !/1つの HTML ファイルで作ってください/.test(l)).join('\n').trim();
+}
+
+function comboParts() { return combo.parts.filter((p) => p && p[0]); }
+
+function bulkPrompt() {
+  const ps = comboParts(), g = $('c-goal').value.trim(), links = $('c-links').value.trim(), time = $('c-time').value.trim();
+  const lines = ['発表の1枚として、次の部品を組み合わせた画面を、1つの HTML ファイルで作りたいです。', ''];
+  lines.push('【伝えたいこと】' + (g || '（1文で書く）'), '', '【配置】1920×1080');
+  ps.forEach((p, k) => lines.push('- ' + MARK[k] + (k === combo.main ? '（主役）' : '') + ': ' + TECHS[techOf(p[0])].title + ' — ' + POS[p[1]]));
+  lines.push('', '【つながり】', links || '- （どの操作が、どの部品を変えるかを書く）', '', '【時間の流れ】', time || '- （何秒後に何が出るか、クリックで何が起きるかを書く）', '', '【部品ごとの中身】');
+  ps.forEach((p, k) => lines.push('', '■ ' + MARK[k] + ': ' + TECHS[techOf(p[0])].title, partBody(p[0])));
+  lines.push('', '【作りの約束】',
+    '- 状態は1つのオブジェクト state にまとめ、各部品の描画関数（renderA(state) など）は state を読むだけにする',
+    '- 操作は state を書き換えてから、関係する部品を描き直す',
+    '- requestAnimationFrame のループは1本だけ。部品ごとにループを作らない',
+    '- 主役の部品をいちばん大きく、いちばん動かす。脇役は主役の邪魔をしない',
+    '- 部品の中身は、この1枚の一部として作る（部品ごとに別の画面にしない）',
+    '- HTML 全体を省略せずに出す', '', COMMON);
+  return lines.join('\n');
+}
+
+/* 段階版: 1回目は主役だけ、2回目以降は「壊さずに足す」 */
+function stepPrompts() {
+  const ps = comboParts(), main = ps[combo.main] || ps[0], rest = ps.filter((p) => p !== main);
+  const links = $('c-links').value.trim(), time = $('c-time').value.trim(), g = $('c-goal').value.trim();
+  const others = rest.map((p) => POS[p[1]] + 'に「' + TECHS[techOf(p[0])].title + '」').join('、');
+  const out = [];
+  out.push(['1回目: 主役だけを作る',
+    'これから2〜3回に分けて、発表の1枚を作ります。1回目は主役の部品だけを作ってください。\n' +
+    (g ? '伝えたいこと: ' + g + '\n' : '') +
+    '主役の配置: ' + POS[main[1]] + '。後で' + (others || '別の部品') + 'を足すので、その場所は空けておいてください。\n' +
+    '状態は1つのオブジェクト state にまとめ、描画関数は state を読むだけにしてください（後で部品を足して連動させるため）。\n\n' + build(techOf(main[0]))]);
+  rest.forEach((p, k) => {
+    const last = k === rest.length - 1;
+    out.push([(k + 2) + '回目: 「' + TECHS[techOf(p[0])].title + '」を足す',
+      '前の HTML を壊さずに、' + POS[p[1]] + 'に「' + TECHS[techOf(p[0])].title + '」を足してください。\n' +
+      '既にある部品の見た目と動きは変えないでください。state は共有し、requestAnimationFrame のループは1本のままにしてください。\n\n' +
+      '【つながり】\n' + (links || '- （どの操作が、どの部品を変えるかを書く）') + '\n' +
+      (last && time ? '\n【時間の流れ】\n' + time + '\n' : '') +
+      '\n【足す部品の中身】\n' + partBody(p[0]) + '\n\nHTML 全体を省略せずに出し直してください。']);
+  });
+  return out;
+}
+
+function outBlock(title, text) {
+  const pre = el('pre', { class: 'preview', text });
+  const btn = el('button', { class: 'copy', text: 'コピー' });
+  btn.addEventListener('click', async () => {
+    const ok = await copyText(text);
+    btn.textContent = ok ? 'コピーしました' : 'コピーできませんでした';
+    btn.classList.toggle('done', ok);
+    toast(ok ? title + ' をコピーしました' : 'コピーできませんでした');
+    setTimeout(() => { btn.textContent = 'コピー'; btn.classList.remove('done'); }, 1600);
+  });
+  return el('div', { class: 'step' }, el('div', { class: 'step-head' }, el('b', { text: title }), btn, el('span', { class: 'count', text: text.length.toLocaleString() + ' 文字' })), pre);
+}
+
+function renderComboOut() {
+  const ps = comboParts(), warn = [];
+  if (ps.length < 2) warn.push('部品を2つ以上選んでください。');
+  if (new Set(ps.map((p) => p[0])).size < ps.length) warn.push('同じ部品が2回選ばれています。');
+  if (!$('c-links').value.trim()) warn.push('つながりが空です。組み合わせる価値の大半はここにあります。');
+  const full = ps.filter((p) => p[1] === '全面').length;
+  if (full && full < ps.length) warn.push('「全面」と他の配置が混ざっています。全面にするなら全部品を全面（場面の切り替え）にしてください。');
+  $('c-warn').textContent = warn.join(' ');
+  const out = $('c-out');
+  out.textContent = '';
+  if (ps.length < 2) return;
+  if (combo.kind === 'bulk') out.append(outBlock('一括版', bulkPrompt()));
+  else for (const [t, s] of stepPrompts()) out.append(outBlock(t, s));
+}
+
+function renderParts() {
+  const box = $('parts');
+  box.textContent = '';
+  for (let k = 0; k < 3; k++) {
+    const p = combo.parts[k] || ['', '右下'];
+    const tsel = el('select', {});
+    if (k === 2) tsel.append(el('option', { value: '', text: '（使わない）' }));
+    TECHS.forEach((t) => tsel.append(el('option', { value: t.slide, text: String(SLIDE_NO[t.slide]).padStart(2, '0') + ' ' + t.title })));
+    tsel.value = p[0];
+    const psel = el('select', {});
+    Object.keys(POS).forEach((key) => psel.append(el('option', { value: key, text: POS[key] })));
+    psel.value = p[1];
+    const radio = el('input', { type: 'radio', name: 'main', checked: combo.main === k });
+    const sync = () => {
+      combo.parts[k] = tsel.value ? [tsel.value, psel.value] : null;
+      if (!combo.parts[combo.main]) combo.main = 0;
+      combo.preset = -1;
+      [...$('presets').children].forEach((b) => b.classList.remove('on'));
+      renderComboOut();
+    };
+    tsel.addEventListener('change', sync);
+    psel.addEventListener('change', sync);
+    radio.addEventListener('change', () => { combo.main = k; renderComboOut(); });
+    box.append(el('div', { class: 'part' }, el('span', { class: 'slot', text: MARK[k] }), tsel, psel, el('label', {}, radio, ' 主役')));
+  }
+}
+
+function applyPreset(i) {
+  const P = PRESETS[i];
+  combo.preset = i;
+  combo.parts = [P.parts[0], P.parts[1], P.parts[2] || null].map((p) => (p ? p.slice() : null));
+  combo.main = P.main;
+  $('c-goal').value = P.goal; $('c-links').value = P.links; $('c-time').value = P.time;
+  [...$('presets').children].forEach((b, j) => b.classList.toggle('on', j === i));
+  renderParts();
+  renderComboOut();
+}
+
+PRESETS.forEach((P, i) => $('presets').append(el('button', { class: 'preset', onclick: () => applyPreset(i) },
+  el('b', { text: (i + 1) + '. ' + P.name }), el('span', { text: P.goal }),
+  el('span', { class: 'tags', text: P.parts.map((p) => TECHS[techOf(p[0])].title).join(' ＋ ') }))));
+['c-goal', 'c-links', 'c-time'].forEach((id) => $(id).addEventListener('input', renderComboOut));
+[...$('c-kind').children].forEach((b) => b.addEventListener('click', () => {
+  combo.kind = b.dataset.k;
+  [...$('c-kind').children].forEach((x) => x.classList.toggle('on', x === b));
+  renderComboOut();
+}));
+
+function setMode(m) {
+  [...$('modes').children].forEach((b) => b.classList.toggle('on', b.dataset.mode === m));
+  $('single').hidden = m !== 'single';
+  $('combo').hidden = m !== 'combo';
+  /* 「1つずつ」で書き換えた値を、部品の中身へ反映し直す */
+  if (m === 'combo') { renderComboOut(); location.hash = 'combo'; } else select(cur);
+}
+[...$('modes').children].forEach((b) => b.addEventListener('click', () => setMode(b.dataset.mode)));
+
+/* #slide-id で開くと、その技法を選んだ状態にする。#combo なら組み合わせ */
+const initialHash = location.hash;
+const start = TECHS.findIndex((t) => t.slide === initialHash.slice(1));
+select(start >= 0 ? start : 0);
+applyPreset(0);
+if (initialHash === '#combo') setMode('combo');
+</script>
+</body>
+</html>
