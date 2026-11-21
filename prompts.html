@@ -8,7 +8,7 @@
 <style>
 :root {
   --bg: #0b0f17; --panel: #111827; --panel2: #162033; --line: #243049;
-  --fg: #e6edf7; --mute: #8b98ad; --accent: #6ea8ff; --good: #4ade80; --warn: #fbbf24;
+  --fg: #e6edf7; --mute: #8b98ad; --accent: #6ea8ff; --good: #4ade80; --warn: #fbbf24; --nlm: #c084fc;
   --sans: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Meiryo", system-ui, sans-serif;
   --mono: "SF Mono", "Cascadia Mono", Consolas, "BIZ UDGothic", monospace;
 }
@@ -20,13 +20,6 @@ header.top { padding: 22px 32px 10px; display: flex; align-items: baseline; gap:
 header.top h1 { margin: 0; font-size: 26px; }
 header.top .sub { color: var(--mute); }
 header.top .deck { margin-left: auto; }
-.howto { margin: 0 32px 16px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; }
-.howto summary { padding: 12px 18px; font-weight: 700; cursor: pointer; }
-.howto .body { padding: 0 22px 16px; display: grid; grid-template-columns: 1.2fr 1fr; gap: 28px; }
-.howto ol { margin: 0; padding-left: 1.4em; }
-.howto li { margin: 4px 0; }
-.howto h3 { margin: 6px 0 4px; font-size: 15px; color: var(--accent); }
-.howto ul { margin: 0; padding-left: 1.2em; color: var(--mute); }
 .layout { display: grid; grid-template-columns: 320px 1fr; gap: 20px; padding: 0 32px 24px; align-items: start; }
 aside { position: sticky; top: 12px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px; max-height: calc(100vh - 24px); overflow: auto; }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
@@ -93,7 +86,47 @@ h3.sec { margin: 0 0 8px; font-size: 16px; }
 .step-head { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
 .step-head b { font-size: 15px; }
 #c-kind { margin: 0; }
-@media (max-width: 900px) { .layout { grid-template-columns: 1fr; } aside { position: static; max-height: none; } .howto .body { grid-template-columns: 1fr; } }
+.pane { padding: 0 32px; }
+.pane ol, .pane ul { margin: 0; padding-left: 1.4em; }
+.pane li { margin: 4px 0; }
+.pane .lead { margin: 0 0 10px; color: var(--mute); }
+.cols3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.cols3 h3, .cols2 h3 { margin: 0 0 6px; font-size: 15px; color: var(--accent); }
+.cols2 { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+.cols2 ul { color: var(--mute); }
+.dl-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
+.btn2 { background: var(--panel2); border: 1px solid var(--accent); color: var(--accent); border-radius: 8px; padding: 6px 16px; font-weight: 700; }
+.linkbtn { background: none; border: 0; color: var(--accent); text-decoration: underline; padding: 0; }
+/* 使い方タブの図 */
+svg.fig { display: block; width: 100%; height: auto; }
+#g-pick svg.fig { max-width: 960px; }
+svg.fig text { fill: var(--fg); font-family: var(--sans); }
+svg.fig .q { fill: var(--panel2); stroke: var(--mute); stroke-width: 1.5; }
+svg.fig .end { fill: var(--panel2); stroke: var(--accent); stroke-width: 2; }
+svg.fig .go { cursor: pointer; }
+svg.fig .go:hover .end, svg.fig .go:focus .end { fill: #1c2a44; stroke-width: 3; }
+svg.fig .go:focus { outline: none; }
+svg.fig .gm { fill: var(--panel2); stroke: var(--accent); stroke-width: 1.6; }
+svg.fig .you { fill: var(--panel2); stroke: var(--good); stroke-width: 1.6; }
+svg.fig .lane { fill: rgba(255,255,255,.025); stroke: var(--line); }
+svg.fig .wire { fill: none; stroke: var(--mute); stroke-width: 1.6; }
+svg.fig .loop { fill: none; stroke: var(--warn); stroke-width: 1.6; stroke-dasharray: 5 4; }
+svg.fig .arrow { fill: var(--mute); }
+svg.fig .arrow-w { fill: var(--warn); }
+svg.fig .nlm { fill: var(--panel2); stroke: var(--nlm); stroke-width: 1.6; stroke-dasharray: 6 4; }
+svg.fig .opt { fill: none; stroke: var(--nlm); stroke-width: 1.6; stroke-dasharray: 5 4; }
+svg.fig .arrow-p { fill: var(--nlm); }
+svg.fig .lab { fill: var(--mute); font-size: 15px; }
+svg.fig .hd { fill: var(--accent); font-weight: 800; }
+svg.fig .chk { fill: var(--warn); font-size: 14px; font-weight: 700; }
+.fig-v { display: none !important; }
+.legend { color: var(--mute); font-size: 13px; margin: 8px 0 0; }
+.legend b.g { color: var(--accent); } .legend b.u { color: var(--good); } .legend b.w { color: var(--warn); } .legend b.p { color: var(--nlm); }
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; } aside { position: static; max-height: none; }
+  .cols3, .cols2 { grid-template-columns: 1fr; }
+  .fig-h { display: none !important; } .fig-v { display: block !important; }
+}
 </style>
 </head>
 <body>
@@ -103,37 +136,79 @@ h3.sec { margin: 0 0 8px; font-size: 16px; }
   <a class="deck" href="index.html" target="_blank">見本集を開く →</a>
 </header>
 
-<details class="howto" open>
-  <summary>使い方</summary>
-  <div class="body">
-    <div>
-      <ol>
-        <li>左の一覧から技法を選ぶ。「見本を開く」で完成形の動きを先に確かめる</li>
-        <li>「中身を書き換える」の欄を自分の内容に変える（そのままでも既定値で動く）。下のプロンプトに即座に反映される（反映された部分は青く光る）</li>
-        <li>「コピー」を押す。共通の条件も最初から入っている</li>
-        <li>Gemini アプリ（gemini.google.com）を開き、入力欄のツールから <b>Canvas</b> を選んでから貼り付けて送る</li>
-        <li>右側に出るプレビューで動きを確かめる。崩れていたら、ページ下の「直させ方」をコピーして送る</li>
-        <li>仕上がったらコードをコピー（またはダウンロード）し、<code>名前.html</code> で保存してダブルクリックで開く</li>
-      </ol>
+<nav class="modes" id="modes">
+  <button class="mode" data-mode="guide">使い方</button>
+  <button class="mode on" data-mode="single">1つずつ</button>
+  <button class="mode" data-mode="combo">組み合わせ（1枚に複数の手法）</button>
+  <button class="mode" data-mode="deck">デッキ（複数枚）</button>
+</nav>
+
+<div class="pane" id="m-guide" hidden>
+  <section class="card">
+    <h3 class="sec">どれを使う？（箱を押すとそのタブへ）</h3>
+    <div id="g-pick"></div>
+  </section>
+  <section class="card">
+    <h3 class="sec">デッキ（複数枚）の流れ</h3>
+    <p class="lead">やりとりは「答える → OK × 3 → 続き × ラウンド数」。どの技法を使うかは Gemini がカタログから選んで提案する。④詳細設計で数字・文言・動きを作る前に確定させる。NotebookLM は資料から正確に答えたいときだけ使う。</p>
+    <div id="g-flow"></div>
+    <p class="legend"><b class="g">青枠</b> Gemini がすること　<b class="u">緑枠</b> あなたがすること　<b class="w">✓ 点検</b> Gemini が返答の末尾で自分で点検する所　<b class="w">黄の点線</b> くり返し　<b class="p">紫の点線</b> NotebookLM を使うときだけ（「あり」は B の質問ブロックを NotebookLM に貼り、答えを戻す）</p>
+  </section>
+  <section class="card">
+    <h3 class="sec">タブごとの手順</h3>
+    <div class="cols3">
+      <div>
+        <h3>1つずつ</h3>
+        <ol>
+          <li>左の一覧から技法を選ぶ。「見本を開く」で完成形の動きを先に確かめる</li>
+          <li>「中身を書き換える」の欄を自分の内容に変える（そのままでも既定値で動く）。反映された部分は青く光る</li>
+          <li>「コピー」を押す。共通の条件も最初から入っている</li>
+          <li>Gemini アプリ（gemini.google.com）を開き、入力欄のツールから <b>Canvas</b> を選んでから貼り付けて送る</li>
+          <li>プレビューで動きを確かめる。崩れていたら、ページ下の「直させ方」をコピーして送る</li>
+          <li>仕上がったらコードを <code>名前.html</code> で保存し、ダブルクリックで開く</li>
+        </ol>
+      </div>
+      <div>
+        <h3>組み合わせ</h3>
+        <ol>
+          <li>「おすすめの組み合わせ」を押すか、部品を2〜3個と配置・主役を選ぶ</li>
+          <li>伝えたいこと・つながり・時間の流れを書く。つながりが組み合わせる価値の大半</li>
+          <li><b>段階版</b>（主役だけ作る → 1つずつ足す）をおすすめ。上から順にコピーして送る</li>
+          <li>部品の中身には「1つずつ」で書き換えた値が入る</li>
+        </ol>
+      </div>
+      <div>
+        <h3>デッキ（複数枚）</h3>
+        <ol>
+          <li>最初に1回だけ Gem を作る（指示文を貼り、技法カタログ .md を知識に入れる）。Gem を使わないなら貼り付け版を送る</li>
+          <li>Gem に「NotebookLM なし（またはあり）で進めて」とテーマを送ると、質問票が出る。「なし」は自分で答える。「あり」は B の質問ブロックを NotebookLM に貼り、出典つきの答えを自分の答えと一緒に戻す</li>
+          <li>構成案・技法案・詳細設計に「OK」か直したい点を返す。詳細設計で画面に出る数字と文言が決まる（「仮」「確認待ち」が残っていないか見る）</li>
+          <li>「続き」と送るたびに数枚ずつ足される。Canvas なら Gemini が差し込む。Canvas が無ければ、届いた <code>&lt;script&gt;</code> の塊を HTML の「ここに次のラウンドを貼る」の行の直前に貼る</li>
+          <li>最後の通し確認に出る5項目を、保存した HTML で確かめる</li>
+        </ol>
+      </div>
     </div>
-    <div>
-      <h3>コツ</h3>
+  </section>
+  <section class="card">
+    <h3 class="sec">コツと困ったとき</h3>
+    <div class="cols2">
       <ul>
-        <li>1枚に複数の手法を入れたいときは「組み合わせ」へ。配置・主役・つながりを決めると、プロンプトが組み上がる。<b>段階版</b>（主役だけ作る → 1つずつ足す）のほうが崩れにくい</li>
-        <li>数値や名前は入力欄で具体的に渡す。曖昧だと毎回違うものが出る</li>
+        <li>数値や名前は具体的に渡す。曖昧だと毎回違うものが出る</li>
+        <li>社外秘の数字はダミーか丸めた値で渡す</li>
         <li>保存した HTML は、ネットを切った状態で開いて動くか確かめる（Canvas のプレビューで動いても、外部を読んでいることがある）</li>
         <li>Canvas のボタン名や位置は変わることがある。見当たらなければ、入力欄のツール（＋や「ツール」）の中を探す</li>
       </ul>
+      <ul>
+        <li>コードが途中で切れたら「続きから」と送る。デッキなら切れた枚だけが出し直される</li>
+        <li>前のスライドが変わってしまったら、ページ下の「直させ方」の「前のスライドが変わった」を送る</li>
+        <li>技法案が合わないと思ったら「5枚目は表にして」のように番号で直させる。カタログの id を書くと確実</li>
+        <li>枚数が多く動く枚も多いときは、章ごとに別の HTML に分けるほうが崩れにくい</li>
+      </ul>
     </div>
-  </div>
-</details>
+  </section>
+</div>
 
-<nav class="modes" id="modes">
-  <button class="mode on" data-mode="single">1つずつ</button>
-  <button class="mode" data-mode="combo">組み合わせ（1枚に複数の手法）</button>
-</nav>
-
-<div class="layout" id="single">
+<div class="layout" id="m-single">
   <aside>
     <div class="chips" id="chips"></div>
     <ul class="list" id="list"></ul>
@@ -156,7 +231,7 @@ h3.sec { margin: 0 0 8px; font-size: 16px; }
   </main>
 </div>
 
-<div class="combo" id="combo" hidden>
+<div class="combo" id="m-combo" hidden>
   <section class="card">
     <h3 class="sec">おすすめの組み合わせ（押すと下にまとめて入る）</h3>
     <div class="presets" id="presets"></div>
@@ -182,6 +257,50 @@ h3.sec { margin: 0 0 8px; font-size: 16px; }
     </div>
     <div id="c-out"></div>
   </section>
+</div>
+
+<div class="pane" id="m-deck" hidden>
+  <section class="card">
+    <h3 class="sec">複数枚のスライドを、Gemini に一続きで作らせる</h3>
+    <p class="lead">Gemini が ①ヒヤリング → ②構成案 → ③技法案 → ④詳細設計 → ⑤作成 → ⑥通し確認 の順に進める。④で画面に出る数字・文言・動きを作る前に確定させるので、作った後の差し戻しが減る。各スライドの技法は、下の技法カタログから Gemini が選んで提案する。<button class="linkbtn" id="d-to-guide">流れを図で見る</button></p>
+    <h3 class="sec">Gem の作り方（最初に1回だけ）</h3>
+    <ol>
+      <li>gemini.google.com を開き、左のメニューから <b>Gem</b>（「Gem マネージャー」や「Gem を探す」）→「新しい Gem」を選ぶ。名前の例: <code>動くスライド デッキ係</code></li>
+      <li>「指示」の欄に、下の <b>1. Gem の指示文</b> をコピーして貼る</li>
+      <li>「知識」の欄に、<b>2. 技法カタログ</b> でダウンロードした <code>slide-catalog.md</code> を追加する</li>
+      <li>保存する。使うときはその Gem を開き、使えるなら入力欄のツールで <b>Canvas</b> を選んでから、例えば下の初回メッセージを送る</li>
+    </ol>
+    <p class="note">Gem の画面の名前や位置は変わることがある。Gem を使えない・作りたくないときは、<b>3. 貼り付け版</b> を通常のチャットに送れば同じ流れで進む。</p>
+  </section>
+  <section class="card">
+    <h3 class="sec">進め方を選ぶ（初回メッセージで伝える）</h3>
+    <div class="cols2">
+      <div>
+        <h3>NotebookLM なし</h3>
+        <ul>
+          <li>とりあえず形を見たいとき、正確な資料が無いとき</li>
+          <li>質問票に自分で答える。足りない数字は Gemini がダミーで埋め、詳細設計で「仮」と示す</li>
+        </ul>
+      </div>
+      <div>
+        <h3>NotebookLM あり</h3>
+        <ul>
+          <li>資料（議事録・報告書・PDF など）から正確な数字で作りたいとき</li>
+          <li>事前に NotebookLM でノートブックを作り、資料をソースに入れておく。<b>技法カタログは入れない</b>（入れると資料に無いことまで答えてしまう）</li>
+          <li>Gemini が出す「NotebookLM に貼る質問」のブロックをそのまま NotebookLM に貼り、返ってきた出典つきの答えを、自分の答え（A）と一緒に Gemini へ貼り戻す</li>
+          <li>詳細設計で「確認待ち」が出たら、追加の質問ブロックで同じことをもう一度</li>
+          <li>社外秘の資料を NotebookLM に入れてよいかは、社内の規程を確かめる</li>
+        </ul>
+      </div>
+    </div>
+    <div id="d-first" class="cols2" style="margin-top:12px"></div>
+  </section>
+  <section class="card"><div id="d-gem"></div></section>
+  <section class="card">
+    <div class="dl-row"><b>2. 技法カタログ（Gem の知識ファイル）</b><button class="copy" id="d-dl">slide-catalog.md をダウンロード</button><span class="count" id="d-cat-count"></span></div>
+    <div id="d-cat"></div>
+  </section>
+  <section class="card"><div id="d-paste"></div></section>
 </div>
 
 <section class="card fixes-card">
@@ -721,6 +840,54 @@ const FIXES = [
   ['集計の合計が合わない', '集計表の総計が、データ全体の合計と一致しているか確かめ、合わなければ直してください。平均の総計は「全体の合計 ÷ 件数」で出し直してください。'],
   ['線が関係ない箱を横切る', 'レーンをまたぐ線が、通らない工程の箱を横切っています。行き先のレーンの境目を横に走らせるよう、線の経路を直してください。'],
   ['組み合わせで連動しない', '部品ごとに別々の状態を持っていて連動していません。状態を1つのオブジェクト state にまとめ、操作は state を変えてから全部品を描き直す形に直してください。'],
+  ['デッキ: ページ送りが効かない', 'ページ送りが効きません。document の keydown を捕捉段階（capture）で受け、← → Space PageUp PageDown Home End でページを移してください。文字を入力する欄にフォーカスがあるときだけ無視し、それ以外では preventDefault してください。直した骨組みの <script> だけを出してください。'],
+  ['デッキ: 前のスライドが変わった', '今回足したスライド以外の中身や見た目が変わっています。前のラウンドまでのスライドと CSS 変数には触れず、今回のラウンドの SLIDES.push(…) の塊だけを出し直してください。'],
+  ['デッキ: 前のスライドの動きが残る', 'ページを移っても前のスライドのアニメーションが止まっていません。各スライドの requestAnimationFrame・setTimeout・setInterval・イベントを scope.loop / scope.timeout / scope.interval / scope.on に置き換え、ページを移るときに scope.dispose() でまとめて止めてください。表示するたびに root を空にして mount し直し、最初から動き直すようにしてください。'],
+  ['デッキ: 途中で切れた', '出力が途中で切れました。切れた枚の SLIDES.push(…) を最初から出し直してください。それより前の枚は出さないでください。まだ長すぎる場合は、このラウンドの残りの枚を次のラウンドに回してください。'],
+];
+
+/* ═════ デッキ（複数枚）用の技法カタログ ═════
+   fit = 向く内容、avoid = 向かない内容、weight = 重さ（1 ふつう / 2 コードが長いか描画が重い） */
+const DECK_META = {
+  terminal: { fit: '発表者の自己紹介、チームやツールの紹介を冒頭で印象づける', avoid: '数字や結論を伝える枚', weight: 1 },
+  race: { fit: '性能や精度の差が、試行の回数や時間の差になって表れることを見せる（モデル・手法・人の比較）', avoid: '比べる対象が2つだけ、静的な比較表で足りる差', weight: 2 },
+  sliders: { fit: '前提（年利・単価・人数など）を変えると結果がどう変わるかを、その場で試す', avoid: '前提を動かす必要のない実績の報告', weight: 1 },
+  barrace: { fit: '複数の項目の順位が年ごとに入れ替わる推移（シェア・売上ランキング）', avoid: '項目が3つ以下、または順位が変わらないデータ', weight: 1 },
+  codetype: { fit: 'コードや手順を段階ごとに区切って説明する（勉強会・技術説明）', avoid: 'コードを読まない聞き手（経営層など）', weight: 1 },
+  compare: { fit: '改善前と改善後、案Aと案Bを同じ枠で見比べる', avoid: '比べる対象が3つ以上', weight: 1 },
+  zoom: { fit: '全体から細部へ掘り下げ、原因や結論の場所を示す（組織・工程・内訳）', avoid: '階層のない話、細部の無い全体像', weight: 1 },
+  flow: { fit: '工程のどこで詰まっているかを、件数の流れとして見せる（ボトルネック）', avoid: '詰まりの無い一本道の工程、正確な数字を読ませたいとき', weight: 1 },
+  queue: { fit: '窓口・人員・処理能力を増減したときの待ち時間を試す', avoid: '待ちが発生しない業務', weight: 1 },
+  cube3d: { fit: 'システムや組織の層の構造（3〜4層）と、各層の部品を見せる', avoid: '層が5つ以上、部品が多い構成', weight: 2 },
+  kpi: { fit: '業績報告で主要な数字（3〜4個）と月別の推移を印象づける', avoid: '数字が多すぎて1枚に収まらないとき', weight: 1 },
+  timeline: { fit: '沿革・年表、プロジェクトの予定と実績（遅れ）', avoid: '時間の順序に意味がない話', weight: 1 },
+  quiz: { fit: '聞き手に予想させてから答えを見せ、思い込みとの差で引き込む', avoid: '答えが自明な問い、持ち時間が短い発表', weight: 1 },
+  sketch: { fit: '課題 → 原因 → 対策のような構造を、手描きで順に描いて説明する', avoid: '正確な数値のグラフ', weight: 1 },
+  particletext: { fit: 'オープニングや章の切り替えで、キーワード1語を強く打ち出す', avoid: '文章や数字を読ませる枚。続けて使うこと', weight: 2 },
+  unitdots: { fit: '割合を「人数」として実感させる（1,000 人中◯人）。切り口ごとの偏り', avoid: '母数が数十以下、または精密な値の比較', weight: 2 },
+  nn: { fit: 'AI・機械学習が「学習する」とはどういうことかを実演する', avoid: 'AI と関係のない話題', weight: 2 },
+  fractal: { fit: '「掘っても掘っても新しい発見がある」ことの比喩。休憩の前後の引き込み', avoid: '業務の数字を伝える枚', weight: 2 },
+  city3d: { fit: '地域 × 支店など2つの軸の大小を、立体の高さで一望させる', avoid: '値の細かい差を読ませたいとき（棒グラフのほうが正確）', weight: 2 },
+  livecode: { fit: 'コードの数字を変えると結果が変わる様子を、その場で見せる（技術デモ）', avoid: 'コードを読まない聞き手', weight: 1 },
+  forcegraph: { fit: '組織・システム・人の関係と、つながりの多さを見せる', avoid: '順序や流れを示したいとき（フロー図の技法を使う）', weight: 1 },
+  morphtext: { fit: 'ビフォー・アフターや言い換えを一語で伝える（課題 → 解決策）', avoid: '長い文章', weight: 1 },
+  sankey: { fit: '予算・人・顧客が、どこからどこへどれだけ流れるか（配分・内訳）', avoid: '流れの経路が1本だけのとき', weight: 1 },
+  swimlane: { fit: '部署をまたぐ業務の手順と、条件で変わる承認の経路', avoid: '担当が1人だけの手順', weight: 1 },
+  funnel: { fit: '段階ごとの歩留まり（営業・採用・申込）と、改善したときの効果', avoid: '段階のない数字', weight: 1 },
+  table: { fit: '表の並び替え、しきい値を超えた所の強調、表からグラフへの変換', avoid: '数行しかない表', weight: 1 },
+  pivot: { fit: '同じデータを、切り口（地域・商品・月）を変えて集計し直して見せる', avoid: '切り口が1つで足りる集計', weight: 2 },
+  drilldown: { fit: '全体の数字から、地域 → 店舗 → 商品へと内訳を掘っていく', avoid: '階層の無いデータ', weight: 1 },
+  linked: { fit: '表と散布図を連動させ、外れた項目を見つけて絞り込む', avoid: '項目が10未満、2つの軸の関係を見る必要が無いとき', weight: 1 },
+};
+
+/* 動かない枚。骨組みの描画関数 STATIC_RENDER がデータから描く（重さ 0.5） */
+const STATICS = [
+  { id: 'cover', title: '表紙', fit: '発表の題名・副題・日付・発表者', shape: "{ type: 'cover', title: '問い合わせ対応の改善', sub: '副題（任意）', date: '2026年12月（任意）', by: '発表者（任意）' }" },
+  { id: 'bullets', title: '箇条書き', fit: '目次、要点の列挙（3〜5項目）', shape: "{ type: 'bullets', title: '今日の話', items: ['現状', '原因', '対策'] }" },
+  { id: 'twocol', title: '2列の比較', fit: '現状と対策、案Aと案Bを文字で並べる', shape: "{ type: 'twocol', title: '現状と対策', left: { head: '現状', items: ['…', '…'] }, right: { head: '対策', items: ['…', '…'] } }" },
+  { id: 'bignum', title: '大きな数字', fit: '数字1つを主役にして言い切る', shape: "{ type: 'bignum', title: '停止時間の最大要因', value: '38時間', note: '段取り替え（任意）' }" },
+  { id: 'quote', title: 'メッセージ', fit: '一文の主張、引用、章の扉', shape: "{ type: 'quote', text: '小さく作って、早く見せる', by: '発言者（任意）' }" },
+  { id: 'summary', title: 'まとめ', fit: '結論と次の一手', shape: "{ type: 'summary', title: 'まとめ', points: ['…', '…'], next: '次の一手を1文で（任意）' }" },
 ];
 
 /* ───── ここから画面 ───── */
@@ -1033,21 +1200,363 @@ PRESETS.forEach((P, i) => $('presets').append(el('button', { class: 'preset', on
   renderComboOut();
 }));
 
+/* ═════ デッキ（複数枚） ═════ */
+
+{
+  const missing = TECHS.filter((t) => !DECK_META[t.slide]).map((t) => t.slide);
+  const extra = Object.keys(DECK_META).filter((k) => techOf(k) < 0);
+  if (missing.length || extra.length) console.error('[deck] DECK_META と TECHS が合いません', { missing, extra });
+}
+
+/* カタログに載せる作り方: 既定値で埋め、共通の条件を外す。
+   「SVG で、1つの HTML ファイルで作ってください。」のような行は「描き方: SVG」にする */
+function techBody(i) {
+  return TECHS[i].prompt.replace(RE, (_, key, def) => (key === '共通' ? '' : def || ''))
+    .split('\n').map((l) => {
+      const m = l.match(/^(.*?)1つの HTML ファイルで作ってください。?$/);
+      if (!m) return l;
+      const how = m[1].replace(/で、$/, '').trim();
+      return how ? '- 描き方: ' + how : null;
+    }).filter((l) => l !== null).join('\n').trim();
+}
+
+const W_LABEL = { 1: 'ふつう', 2: '重い' };
+
+function catalogMd() {
+  const L = ['# 技法カタログ — 動くスライド', '',
+    'デッキの各スライドの見せ方は、このカタログの id から1つ選ぶ。カタログにない見せ方は作らない。',
+    '重さ: 静的なスライド 0.5 ／ ふつう 1 ／ 重い 2（コードが長いか描画が重い）。1回の作成（ラウンド）で作るのは、重さの合計 3 まで。',
+    '「作り方」は見本の既定の中身。ヒヤリングで聞いた内容に合わせて、数字・名前・項目を置き換えて使う。',
+    'デッキの中で作るときの読み替え:',
+    '- タブや複数の題材がある技法は、構成案のその枚に合う題材を1つだけ作る（ユーザーが求めたときだけ複数）。重さはこの前提で付けている',
+    '- 「画面」はそのスライドの root（1920×1080）のこと。ブラウザのウィンドウではない',
+    '- 「開いた直後」は start が呼ばれた直後のこと',
+    '- requestAnimationFrame・setTimeout・setInterval・addEventListener は、指示文の scope の関数に置き換える',
+    '- 「1つの HTML ファイルで作る」「1920×1080 を scale する」は骨組みが受け持つ。スライドの中では行わない', '',
+    '## 一覧', '', '| id | 名前 | 種類 | 重さ | 向く内容 |', '|---|---|---|---|---|'];
+  STATICS.forEach((s) => L.push('| ' + s.id + ' | ' + s.title + ' | 静的 | 0.5 | ' + s.fit + ' |'));
+  TECHS.forEach((t) => { const d = DECK_META[t.slide]; L.push('| ' + t.slide + ' | ' + t.title + ' | ' + t.cat + ' | ' + d.weight + ' | ' + d.fit + ' |'); });
+  L.push('', '## 静的なスライド（重さ 0.5）', '', '骨組みの描画関数 STATIC_RENDER が、次のデータから描く。各スライドはデータだけを書く。値はすべて文字列（items と points は文字列の配列）。「（任意）」と書いた項目は省略してよい。', '');
+  STATICS.forEach((s) => L.push('### ' + s.id + ' — ' + s.title, '- 向く: ' + s.fit, '- データ: `' + s.shape + '`', ''));
+  L.push('## 動く技法', '');
+  TECHS.forEach((t, i) => {
+    const d = DECK_META[t.slide];
+    L.push('### ' + t.slide + ' — ' + t.title,
+      '- 種類: ' + t.cat + '　重さ: ' + d.weight + '（' + W_LABEL[d.weight] + '）',
+      '- 完成のイメージ: ' + t.image,
+      '- 向く: ' + d.fit,
+      '- 向かない: ' + d.avoid,
+      '- 確かめること: ' + t.checks.join(' ／ '),
+      '- 作り方:', '', '~~~text', techBody(i), '~~~', '');
+  });
+  return L.join('\n');
+}
+
+/* ①〜④と⑥は表と説明を返すので「HTML のコードだけを返す」は外す。
+   アニメーションはデッキでは scope.loop で回すので、その行を置き換える */
+const DECK_COMMON = COMMON.split('\n').filter((l) => !/説明は不要/.test(l))
+  .map((l) => (/requestAnimationFrame/.test(l) ? '- アニメーションは scope.loop で回し、経過時間（dt）で動かす（requestAnimationFrame を直接使わない）' : l)).join('\n');
+
+function gemText() {
+  return [
+    'あなたは、ブラウザで映す「動くスライド」のデッキ（複数枚のスライド）を作る担当です。',
+    '知識ファイル「技法カタログ」（slide-catalog.md）から各スライドの見せ方を選び、1つの HTML ファイルのデッキに仕上げます。',
+    '次の ①〜⑥ の順に進めます。段階を飛ばさず、①〜④は各段階の終わりでユーザーの返事を待ってください。',
+    '',
+    '## 2つの進め方',
+    '- 「NotebookLM あり」: ユーザーが資料を NotebookLM に入れてある。事実と数字は、あなたが作った質問を NotebookLM に答えさせ、その答え（出典つき）をユーザーが貼り戻す',
+    '- 「NotebookLM なし」: ユーザーが自分で答える。資料が無いときや、とりあえず形を見たいとき。足りない数字はダミーで作る',
+    '初回メッセージにどちらかが書いてあれば、それに従う。書いていなければ「なし」で進め、質問票の冒頭に「資料から正確に答えたい場合は『NotebookLM あり』と返してください」と1行添える。',
+    '',
+    '## ① ヒヤリング',
+    '最初の返答では、質問票を一度にまとめて出す。前置きは短くする。初回メッセージで分かっている項目は、答えを埋めて示し、確認だけにする。',
+    '',
+    '### 「なし」のとき',
+    '1. 発表の目的（例: 予算の承認を取りたい、勉強会で仕組みを伝えたい）',
+    '2. 聞き手（人数、立場、前提知識）',
+    '3. 持ち時間（分）',
+    '4. いちばん伝えたい結論（1文）',
+    '5. 使いたい数字・データ・資料の要点（無ければ「ダミーで」）',
+    '6. 枚数の希望（任意。無ければ持ち時間から決める）',
+    '7. 雰囲気（落ち着いた／勢いのある／遊び心のある、など）',
+    '質問票の最後に「社外秘の数字は、ダミーか丸めた値で書いてください」と添える。',
+    '',
+    '### 「あり」のとき',
+    '質問を2つに分けて出す。',
+    '- A. ユーザーに聞くこと（資料には無い、本人の意図）: 上の 1・2・3・4・6・7',
+    '- B. NotebookLM に貼る質問: 1つのコードブロックにまとめ、そのまま貼れるようにする。テーマに合わせて 6〜10 問作る（現状の数字と時点、推移、課題とその原因、これまでの施策と結果、比べる相手、決まっていることと未決のこと など）。ブロックの先頭に次の指示を入れる:',
+    '  「次の質問に、ソースの資料だけを根拠に答えてください。番号を付けて答え、各回答の末尾に出典（資料名と該当箇所）を書いてください。資料に無いことは推測せず『資料に無し』と書いてください。数字には単位と時点（いつの値か）を付けてください。」',
+    '- ユーザーには「A の答えと、NotebookLM の答えをまとめて貼ってください」と頼む',
+    '- 受け取ったら、「資料に無し」の項目と、答えどうしの食い違い（同じ項目で数字が違う など）だけを一覧にし、ユーザーが自分で答えるか、仮置きでよいかを聞く',
+    '- 以後の段階では、NotebookLM の答えの番号を出典として書き続ける（例: 出典 NB-3）',
+    '',
+    '### どちらのときも',
+    '答えに足りない点があれば、その点だけを1回だけ聞き直す。それでも足りなければ仮置きして②へ進み、仮置きした点を②で明記する。',
+    '',
+    '## ② 構成案',
+    '表で出す: 番号 ／ 役割（表紙・目次・課題・根拠・提案・まとめ など）／ その枚で言いたいこと（1文）／ 使う数字（「あり」では出典も）',
+    '- 枚数は持ち時間から決める（1枚 1〜2 分が目安）',
+    '- 返答の最後に「点検」を3行以内で付ける: 時間内に収まるか ／ 結論につながらない枚はないか ／ 仮置きした点',
+    '- 「OK」か直したい点を聞いて止まる',
+    '',
+    '## ③ 技法案',
+    '表で出す: 番号 ／ 技法 id ／ 選んだ理由（1文）／ 代わりの案（技法 id）／ 重さ',
+    '- 技法はカタログの id から1枚に1つ選ぶ。カタログにない見せ方を作らない',
+    '- 動かす割合はあなたが判断する。動く技法は、山場や、数字を実感させたい枚に絞る。表紙・目次・まとめは静的なスライドを基本にする',
+    '- 重さ 2 の技法を続けて置かない。カタログの「向かない」に当たる使い方をしない',
+    '- 作成ラウンドの計画を出す。数え方:',
+    '  - 重さは 静的 0.5 ／ ふつう 1 ／ 重い 2。1回目だけ、骨組みを重さ 1 として足す',
+    '  - スライドは並び順のまま前から詰める。足すと 3 を超える枚は次のラウンドに回す（ちょうど 3 なら同じラウンドに入れる）',
+    '  - 例: 表紙 0.5 ＋ 目次 0.5 ＋ kpi 1 ＋ 骨組み 1 = 3 → 1回目は 1〜3枚目。次の sankey 1 ＋ 静的 0.5 ＋ city3d 2 は 3.5 で超えるので、2回目は 4〜5枚目、3回目は 6枚目から',
+    '- 13枚を超え、動く枚が多いときは、章ごとに別の HTML に分ける案も出す',
+    '- 返答の最後に「点検」を3行以内で付ける: 重い技法が続いていないか ／ 各技法がカタログの「向く」に合っているか ／ ラウンドの数',
+    '- 「OK」か直したい点を聞いて止まる',
+    '',
+    '## ④ 詳細設計',
+    '作る前に、画面に出るものをすべて決める。1枚ごとに表で出す: 番号 ／ 見出し（画面に出す文そのもの）／ 本文・ラベル ／ 使う数字（値・単位・時点・出典） ／ 技法の設定（カタログの「作り方」で置き換える項目: 項目名、期間、スライダーの範囲、色分け、結論の一文 など） ／ 動きの台本（何秒で何が出るか、クリックで何が起きるか）',
+    '- 静的なスライドは、SLIDES.push に入れるデータそのものを書く',
+    '- 「なし」のとき: 足りない数字はもっともらしいダミーで埋め、「仮」と書く',
+    '- 「あり」のとき: 出典の無い数字は「確認待ち」と書く。確認待ちがあれば、表の後に NotebookLM に貼る追加の質問ブロックを ① と同じ形式で出す',
+    '- 返答の最後に「点検」を3行以内で付ける: 数字が②の結論を支えているか ／ 仮と確認待ちの数 ／ 各技法の「確かめること」に必要な設定が埋まっているか',
+    '- 「OK」か直したい点を聞いて止まる。⑤ではこの表を正とし、表に無い数字や文言を足さない',
+    '',
+    '## ⑤ 作成',
+    '- 1回目: 下の「骨組みの約束」に沿った HTML 全体を、1ラウンド目のスライドを入れて省略せずに出す',
+    '- 2回目以降: ユーザーが「続き」と送ったら、そのラウンドのスライドだけを <script> の塊1つで出す。HTML 全体は出し直さない（毎回全体を出すと、後のラウンドほど長くなって途中で切れるため）',
+    '  - 塊の中身は SLIDES.push(…) だけにする。スライド専用の CSS が要るときは、塊の中で <style> 要素を作って head に足す',
+    '  - Canvas が使えるときは、Canvas の同じ文書の「ここに次のラウンドを貼る」印の行の直前へ、自分で差し込む',
+    '  - Canvas が使えないときは、塊のコードだけを出し、「印の行の直前に貼ってください」と1行添える',
+    '- それまでのスライドの中身と見た目（CSS 変数）は変えない',
+    '- 動く技法の中身は、カタログの「作り方」を元に、④の詳細設計の表の数字・文言・設定に置き換えて作る。カタログ冒頭の「デッキの中で作るときの読み替え」に従う',
+    '- コードの後に、足した枚ごとの「点検」を1行ずつ付ける: カタログの「確かめること」を満たすように作ったか。残りのラウンド数も書く',
+    '- 出力が途中で切れて、ユーザーが「続きから」と送ったら、切れた枚の SLIDES.push(…) を最初から出し直す。それより前の枚は出さない。1回目で骨組みの途中で切れたときは、骨組みのスライドを1ラウンド目から外して、骨組みだけを出し直す',
+    '- ユーザーが「全体を出して」と送ったときだけ、すべてのラウンドを入れた HTML 全体を出す',
+    '',
+    '## ⑥ 通し確認',
+    '最後のラウンドの返答に、1回だけ次を付ける。',
+    '- 全体の点検: 枚数と並びが構成案と一致しているか ／ 動く技法の枚が scope 経由だけで動き、ページを移ると止まるか ／ 見た目の CSS 変数が統一されているか',
+    '- ユーザーが手で確かめる5項目: ネットを切って開く ／ F で全画面にする ／ ← → で全ページを送る ／ 戻ったスライドが最初から動き直す ／ 重い枚がカクつかない',
+    '',
+    '## 骨組みの約束',
+    '- 1920×1080 の舞台（#stage）を作り、transform: scale() でウィンドウに合わせる。ウィンドウの大きさが変わっても追従する',
+    '- 見た目は1回目に CSS 変数（--bg --fg --mute --accent、見出しと本文の文字サイズ、余白）で決め、以後のラウンドでは変えない。各スライドはこの変数を使う。背景は暗い色が基本。① の雰囲気は --accent の色と動きの速さで出す',
+    '- HTML の並びは、<style> → #stage → 骨組みの <script>（SLIDES = [] と STATIC_RENDER と scope）→ スライドの <script> の塊（ラウンドごと）→ 印の行 <!-- ここに次のラウンドを貼る --> → 起動の <script>（SLIDES がそろってからページ送りを始める）',
+    "- 静的なスライドはデータだけで書く（例: SLIDES.push({ type: 'bullets', title: '今日の話', items: ['現状', '原因', '対策'] })）。STATIC_RENDER が type（カタログの静的スライドの id）ごとに描く",
+    "- 動く技法のスライドは SLIDES.push({ tech: 'kpi', title: '…', mount(root) {…}, start(scope) {…} }) の形にする。tech はカタログの id。同じ技法を2枚使ってよい",
+    '- 表示するたびに root を空にして mount で DOM を作り直し、続けて start を呼ぶ。これで、戻ってきたときと R を押したときに最初から動き直す。mount は DOM を作るだけで動かさない',
+    '- scope は次の5つを持つ。スライドは requestAnimationFrame・setTimeout・setInterval・addEventListener を直接使わず、必ずこれを使う',
+    '  - scope.loop(fn): 毎フレーム fn(dt, t) を呼ぶ（dt は前のフレームからの秒、t は start からの秒）',
+    '  - scope.timeout(fn, ms) ／ scope.interval(fn, ms): setTimeout ／ setInterval と同じ',
+    '  - scope.on(target, type, fn, options): addEventListener と同じ',
+    '  - scope.dispose(): 上の全部を止めて外す。骨組みだけが呼ぶ',
+    '- 表示中のスライドだけを動かす。ページを移るときは、前のスライドの scope.dispose() で全部止めてから次のスライドを表示する',
+    '- スライドの中の canvas は root の大きさ（1920×1080 またはその一部）の固定解像度にする。ウィンドウの大きさに合わせない',
+    '- ポインタの位置は、getBoundingClientRect() から割合で求めて 1920×1080 の座標に戻す（#stage が拡大縮小されていてもずれないように）',
+    '- 操作: ← → Space PageUp PageDown でページ送り、Home ／ End、F で全画面、R で今のスライドを最初から。URL の #番号 で開くとその枚から始まる',
+    '- キーは document の keydown を捕捉段階（capture）で受ける。文字を入力する欄（input type=text など、textarea、contenteditable）にフォーカスがあるときだけ何もしない。それ以外でページ送りのキーなら preventDefault してページを送る（スライダーやボタンにフォーカスが残っていても ← → や Space が取られないように）',
+    '- 右下にページ番号（3 / 12）と、細い進み具合の線を出す',
+    '- 1枚のエラーで全体を止めない。mount と start を try で囲み、console.error に出す',
+    '- DOM は createElement で組む',
+    '',
+    DECK_COMMON,
+    '- ⑤ではコードの後に点検だけを書き、長い説明はしない',
+  ].join('\n');
+}
+
+function pasteText() {
+  return 'これから、下の指示とカタログに従って、発表用のスライドを一緒に作ってください。最初の返答は ① の質問票だけにしてください。\n\n' +
+    '────────── 指示 ──────────\n' + gemText() + '\n\n────────── 技法カタログ ──────────\n' + catalogMd();
+}
+
+const FIRST_MSG = {
+  plain: 'NotebookLM なしで進めてください。来月の部内報告（持ち時間 15 分）のスライドを作りたいです。テーマは「問い合わせ対応の改善」です。数字はダミーで構いません。質問票から始めてください。',
+  nlm: 'NotebookLM ありで進めてください。来月の部内報告（持ち時間 15 分）のスライドを作りたいです。テーマは「問い合わせ対応の改善」で、関係する議事録と月次報告を NotebookLM に入れてあります。質問票から始めてください。',
+};
+
+function renderDeck() {
+  $('d-first').append(outBlock('初回メッセージの例（なし）', FIRST_MSG.plain), outBlock('初回メッセージの例（あり）', FIRST_MSG.nlm));
+  $('d-gem').append(outBlock('1. Gem の指示文', gemText()));
+  $('d-cat-count').textContent = '動く技法 ' + TECHS.length + ' ／ 静的 ' + STATICS.length + '。コピーして貼ってもよい';
+  $('d-cat').append(outBlock('技法カタログの中身', catalogMd()));
+  $('d-paste').append(outBlock('3. 貼り付け版（Gem を使わないとき。指示文 ＋ カタログ）', pasteText()));
+}
+$('d-dl').addEventListener('click', () => {
+  const url = URL.createObjectURL(new Blob([catalogMd()], { type: 'text/markdown;charset=utf-8' }));
+  const a = el('a', { href: url, download: 'slide-catalog.md' });
+  document.body.append(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  toast('slide-catalog.md のダウンロードを始めました');
+});
+$('d-to-guide').addEventListener('click', () => { setMode('guide'); $('g-flow').scrollIntoView({ block: 'center' }); });
+
+/* ═════ 使い方タブの図 ═════ */
+
+const SVGNS = 'http://www.w3.org/2000/svg';
+const sv = (tag, attrs, ...ch) => {
+  const n = document.createElementNS(SVGNS, tag);
+  for (const k in attrs || {}) {
+    const v = attrs[k];
+    if (v == null) continue;
+    if (k === 'text') n.textContent = v; else n.setAttribute(k, v);
+  }
+  for (const c of ch.flat()) if (c) n.append(c);
+  return n;
+};
+let markSeq = 0;
+/* 矢印の先。id は図ごとに変える */
+function markers(svgEl) {
+  const id = 'ah' + (++markSeq);
+  const mk = (suffix, cls) => sv('marker', { id: id + suffix, viewBox: '0 0 10 10', refX: 9, refY: 5, markerWidth: 8, markerHeight: 8, orient: 'auto-start-reverse' },
+    sv('path', { d: 'M0,0 L10,5 L0,10 z', class: cls }));
+  svgEl.append(sv('defs', {}, mk('', 'arrow'), mk('w', 'arrow-w'), mk('p', 'arrow-p')));
+  return id;
+}
+/* 箱 p = { cx, cy, w, h }。1行目を見出しにし、chk なら最後に「✓ 点検」 */
+function box(p, cls, lines, chk) {
+  const g = sv('g', {}, sv('rect', { x: p.cx - p.w / 2, y: p.cy - p.h / 2, width: p.w, height: p.h, rx: 12, class: cls }));
+  const n = lines.length + (chk ? 1 : 0), lh = 22, y0 = p.cy - (n - 1) * lh / 2;
+  lines.forEach((s, k) => g.append(sv('text', { x: p.cx, y: y0 + k * lh, 'text-anchor': 'middle', 'dominant-baseline': 'central',
+    class: k ? 'lab' : null, 'font-size': k ? null : 17, 'font-weight': k ? null : 700, text: s })));
+  if (chk) g.append(sv('text', { x: p.cx, y: y0 + lines.length * lh, class: 'chk', 'text-anchor': 'middle', 'dominant-baseline': 'central', text: '✓ 点検' }));
+  return g;
+}
+/* a から b へ。axis 'x' は左右の辺どうし、'y' は上下の辺どうしをつなぐ。off は線をずらす量。
+   kind: 'loop' はくり返し（黄の点線）、'opt' は使うときだけの流れ（紫の点線） */
+function wire(a, b, axis, mid, opt) {
+  const o = opt || {}, off = o.off || 0;
+  let p1, p2, d;
+  if (axis === 'x') { const s = Math.sign(b.cx - a.cx) || 1; p1 = [a.cx + s * a.w / 2, a.cy + off]; p2 = [b.cx - s * b.w / 2, b.cy + off]; d = [s, 0]; }
+  else { const s = Math.sign(b.cy - a.cy) || 1; p1 = [a.cx + off, a.cy + s * a.h / 2]; p2 = [b.cx + off, b.cy - s * b.h / 2]; d = [0, s]; }
+  const k = Math.max(14, Math.abs(axis === 'x' ? p2[0] - p1[0] : p2[1] - p1[1]) / 2);
+  const kind = o.kind || 'wire', suffix = { wire: '', loop: 'w', opt: 'p' }[kind];
+  const g = sv('g', {}, sv('path', { class: kind, 'marker-end': 'url(#' + mid + suffix + ')',
+    d: 'M' + p1 + ' C' + (p1[0] + d[0] * k) + ',' + (p1[1] + d[1] * k) + ' ' + (p2[0] - d[0] * k) + ',' + (p2[1] - d[1] * k) + ' ' + p2 }));
+  if (o.label) {
+    const mx = (p1[0] + p2[0]) / 2, my = (p1[1] + p2[1]) / 2, lp = o.lpos;
+    g.append(sv('text', lp ? { x: lp.x, y: lp.y, 'text-anchor': 'middle', 'dominant-baseline': 'central', class: 'lab', text: o.label }
+      : axis === 'x' ? { x: mx, y: my - 10, 'text-anchor': 'middle', class: 'lab', text: o.label }
+        : { x: mx + 10, y: my, 'dominant-baseline': 'central', class: 'lab', text: o.label }));
+  }
+  return g;
+}
+
+/* どれを使うかの分かれ図 */
+function pickFig() {
+  const s = sv('svg', { class: 'fig', viewBox: '0 0 1080 300', role: 'img', 'aria-label': 'どのタブを使うかの分かれ図' });
+  const mid = markers(s);
+  const q1 = { cx: 140, cy: 175, w: 230, h: 76 }, q2 = { cx: 470, cy: 95, w: 250, h: 76 };
+  const ends = [
+    { p: { cx: 900, cy: 45, w: 340, h: 78 }, mode: 'single', lines: ['1つずつ', '見せ方を1つ選んで1枚作る'], from: q2, label: '1つ' },
+    { p: { cx: 900, cy: 145, w: 340, h: 78 }, mode: 'combo', lines: ['組み合わせ', '見せ方2〜3個を連動させて1枚'], from: q2, label: '2〜3個' },
+    { p: { cx: 900, cy: 252, w: 340, h: 78 }, mode: 'deck', lines: ['デッキ（複数枚）', '構成と技法選びも Gemini に任せる'], from: q1, label: '複数枚' },
+  ];
+  s.append(wire(q1, q2, 'x', mid, { label: '1枚' }));
+  ends.forEach((e) => s.append(wire(e.from, e.p, 'x', mid, { label: e.label })));
+  s.append(box(q1, 'q', ['スライドは何枚？']), box(q2, 'q', ['1枚の中の見せ方は？']));
+  ends.forEach((e) => {
+    const g = sv('g', { class: 'go', role: 'button', tabindex: 0, 'aria-label': e.lines[0] + ' のタブを開く' }, box(e.p, 'end', e.lines));
+    g.addEventListener('click', () => { setMode(e.mode); window.scrollTo(0, 0); });
+    g.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); setMode(e.mode); window.scrollTo(0, 0); } });
+    s.append(g);
+  });
+  return s;
+}
+
+/* デッキの流れ。gm = Gemini の箱、you = あなたの箱、nlm = NotebookLM の箱（使うときだけ）、chk = 自己点検あり */
+const FLOW = [
+  { hd: '準備', you: ['Gem を作る', '指示文＋カタログ .md', '（または貼り付け版）'] },
+  { hd: '① ヒヤリング', gm: ['質問票を出す', 'あり: NotebookLM 用の', '質問ブロックも'], you: ['質問票に答える', 'あり: B を NotebookLM へ', '答えを Gemini へ戻す'],
+    nlm: ['質問ブロックに答える', '資料だけを根拠に', '出典つき'] },
+  { hd: '② 構成案', gm: ['構成案の表', '枚数・役割・言いたいこと'], chk: true, you: ['OK か', '直したい点を返す'] },
+  { hd: '③ 技法案', gm: ['技法案の表', '技法 id・理由・代案', 'ラウンドの計画'], chk: true, you: ['OK か', '直したい点を返す'] },
+  { hd: '④ 詳細設計', gm: ['詳細設計の表', '見出し・数字・出典', '設定・動きの台本'], chk: true, you: ['OK か直す', 'あり: 確認待ちを', 'NotebookLM で埋める'],
+    nlm: ['追加の質問に答える', '「確認待ち」の数字'] },
+  { hd: '⑤ 作成', gm: ['1ラウンド分を作る', '1回目は骨組みごと', '2回目からは塊だけ'], chk: true, you: ['「続き」と送る', '塊を印の行の前に貼る', '（Canvas なら自動）'] },
+  { hd: '⑥ 通し確認', gm: ['全体の点検', '手で確かめる5項目', '（最後の回の返答に付く）'], chk: true, you: ['保存して開き', '5項目を確かめる'] },
+];
+
+function flowFig(horiz) {
+  const n = FLOW.length;
+  const W = horiz ? 110 + n * 230 + 10 : 880, H = horiz ? 530 : 60 + n * 175;
+  const s = sv('svg', { class: 'fig ' + (horiz ? 'fig-h' : 'fig-v'), viewBox: '0 0 ' + W + ' ' + H, role: 'img', 'aria-label': 'デッキを作る流れ（Gemini・あなた・NotebookLM の3レーン）' });
+  const mid = markers(s);
+  const LANE = { gm: 0, you: 1, nlm: 2 };
+  const pos = (i, lane) => (horiz
+    ? { cx: 110 + i * 230 + 115, cy: [130, 300, 450][LANE[lane]], w: 200, h: [140, 110, 96][LANE[lane]] }
+    : { cx: [255, 505, 755][LANE[lane]], cy: 60 + i * 175 + 80, w: 226, h: [128, 100, 96][LANE[lane]] });
+  const ST = horiz ? 'x' : 'y', LN = horiz ? 'y' : 'x';
+  const NAMES = [['Gemini', null], ['あなた', 'fill: var(--good)'], ['NotebookLM', 'fill: var(--nlm)']];
+  /* レーンと見出し */
+  if (horiz) {
+    [[48, 164], [228, 144], [388, 124]].forEach(([y, h]) => s.append(sv('rect', { class: 'lane', x: 0, y, width: W, height: h, rx: 10 })));
+    NAMES.forEach(([t, st], k) => s.append(sv('text', { x: 55, y: [130, 300, 440][k], 'text-anchor': 'middle', 'dominant-baseline': 'central', class: 'hd', style: st, 'font-size': k === 2 ? 14 : null, text: t })));
+    s.append(sv('text', { x: 55, y: 462, 'text-anchor': 'middle', 'dominant-baseline': 'central', class: 'lab', 'font-size': 12, text: '（使うとき）' }));
+    FLOW.forEach((f, i) => s.append(sv('text', { x: pos(i, 'gm').cx, y: 26, 'text-anchor': 'middle', 'dominant-baseline': 'central', class: 'hd', text: f.hd })));
+  } else {
+    [135, 385, 635].forEach((x) => s.append(sv('rect', { class: 'lane', x, y: 48, width: 240, height: H - 52, rx: 10 })));
+    NAMES.forEach(([t, st], k) => s.append(sv('text', { x: [255, 505, 755][k], y: 26, 'text-anchor': 'middle', 'dominant-baseline': 'central', class: 'hd', style: st, text: k === 2 ? t + '（使うとき）' : t })));
+    FLOW.forEach((f, i) => s.append(sv('text', { x: 64, y: pos(i, 'gm').cy, 'text-anchor': 'middle', 'dominant-baseline': 'central', class: 'hd', text: f.hd })));
+  }
+  /* 線: 先に描いて箱の下に敷く */
+  const last = n - 1, make = last - 1;
+  FLOW.forEach((f, i) => {
+    if (f.gm) s.append(wire(pos(i, 'gm'), pos(i, 'you'), LN, mid, i === make ? { off: horiz ? -40 : -22 } : {}));
+    if (i < make) s.append(wire(pos(i, 'you'), pos(i + 1, 'gm'), ST, mid));
+    if (f.nlm) {
+      const o = horiz ? 30 : 16;
+      s.append(wire(pos(i, 'you'), pos(i, 'nlm'), LN, mid, { off: -o, kind: 'opt' }), wire(pos(i, 'nlm'), pos(i, 'you'), LN, mid, { off: o, kind: 'opt' }));
+    }
+  });
+  const py = pos(make, 'you');
+  s.append(wire(py, pos(make, 'gm'), LN, mid, { off: horiz ? 40 : 22, kind: 'loop', label: 'ラウンドの数だけくり返す',
+    lpos: horiz ? null : { x: py.cx, y: py.cy + py.h / 2 + 18 } }));
+  s.append(wire(pos(make, 'gm'), pos(last, 'gm'), ST, mid));
+  /* 箱 */
+  FLOW.forEach((f, i) => {
+    if (f.gm) s.append(box(pos(i, 'gm'), 'gm', f.gm, f.chk));
+    s.append(box(pos(i, 'you'), 'you', f.you));
+    if (f.nlm) s.append(box(pos(i, 'nlm'), 'nlm', f.nlm));
+  });
+  return s;
+}
+
+function renderGuide() {
+  $('g-pick').append(pickFig());
+  $('g-flow').append(flowFig(true), flowFig(false));
+}
+
+const MODES = ['guide', 'single', 'combo', 'deck'];
 function setMode(m) {
   [...$('modes').children].forEach((b) => b.classList.toggle('on', b.dataset.mode === m));
-  $('single').hidden = m !== 'single';
-  $('combo').hidden = m !== 'combo';
+  MODES.forEach((k) => { $('m-' + k).hidden = k !== m; });
   /* 「1つずつ」で書き換えた値を、部品の中身へ反映し直す */
-  if (m === 'combo') { renderComboOut(); location.hash = 'combo'; } else select(cur);
+  if (m === 'single') select(cur);
+  else {
+    if (m === 'combo') renderComboOut();
+    /* location.hash だと同じ id のタブ本体へスクロールしてタブの並びが隠れるので、履歴だけ書き換える */
+    try { history.replaceState(null, '', '#' + m); } catch (e) { location.hash = m; }
+  }
 }
 [...$('modes').children].forEach((b) => b.addEventListener('click', () => setMode(b.dataset.mode)));
 
-/* #slide-id で開くと、その技法を選んだ状態にする。#combo なら組み合わせ */
+/* #slide-id で開くと、その技法を選んだ状態にする。#guide / #combo / #deck ならそのタブ */
 const initialHash = location.hash;
 const start = TECHS.findIndex((t) => t.slide === initialHash.slice(1));
 select(start >= 0 ? start : 0);
 applyPreset(0);
-if (initialHash === '#combo') setMode('combo');
+renderDeck();
+renderGuide();
+if (MODES.includes(initialHash.slice(1)) && initialHash !== '#single') setMode(initialHash.slice(1));
+
+/* 「戻る」や URL 欄でハッシュが変わったら、表示をハッシュに合わせる */
+window.addEventListener('hashchange', () => {
+  const h = location.hash.slice(1);
+  const i = TECHS.findIndex((t) => t.slide === h);
+  if (i >= 0) { cur = i; setMode('single'); }
+  else if (MODES.includes(h)) setMode(h);
+});
 </script>
 </body>
 </html>
