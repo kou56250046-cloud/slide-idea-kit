@@ -53,6 +53,11 @@ main { min-width: 0; }
 pre.preview { margin: 0; white-space: pre-wrap; word-break: break-word; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; font: 14px/1.75 var(--sans); max-height: 520px; overflow: auto; }
 .preview .fill { background: rgba(110,168,255,.18); color: #cfe0ff; border-radius: 4px; padding: 0 2px; }
 .preview .common { color: var(--mute); }
+.preview .ask { background: rgba(255,200,90,.16); color: #ffe2a8; border-radius: 4px; padding: 0 2px; }
+.preview .hear { color: #d8f5e4; }
+.prompt-head { flex-wrap: wrap; }
+.prompt-head .chips { margin: 0; }
+.prompt-head h3, .prompt-head .copy, .prompt-head .count, .prompt-head .chip { white-space: nowrap; }
 .checks { margin: 0; padding-left: 1.3em; }
 .checks li { margin: 2px 0; }
 h3.sec { margin: 0 0 8px; font-size: 16px; }
@@ -140,7 +145,7 @@ svg.fig .chk { fill: var(--warn); font-size: 14px; font-weight: 700; }
   <button class="mode" data-mode="guide">使い方</button>
   <button class="mode on" data-mode="single">1つずつ</button>
   <button class="mode" data-mode="combo">組み合わせ（1枚に複数の手法）</button>
-  <button class="mode" data-mode="deck">デッキ（複数枚）</button>
+  <button class="mode" data-mode="deck">Gem（一言で頼む・デッキ）</button>
 </nav>
 
 <div class="pane" id="m-guide" hidden>
@@ -161,8 +166,8 @@ svg.fig .chk { fill: var(--warn); font-size: 14px; font-weight: 700; }
         <h3>1つずつ</h3>
         <ol>
           <li>左の一覧から技法を選ぶ。「見本を開く」で完成形の動きを先に確かめる</li>
-          <li>「中身を書き換える」の欄を自分の内容に変える（そのままでも既定値で動く）。反映された部分は青く光る</li>
-          <li>「コピー」を押す。共通の条件も最初から入っている</li>
+          <li>「ヒヤリングで頼む」のまま「コピー」を押す。欄は書き換えなくてよい。書き換えた欄は青く光り、Gemini に聞かれない</li>
+          <li>Gemini が出す選択肢つきの質問票に「1-a 2-おまかせ」か「全部おまかせ」で答える。すぐ作らせたいときは「そのまま頼む」</li>
           <li>Gemini アプリ（gemini.google.com）を開き、入力欄のツールから <b>Canvas</b> を選んでから貼り付けて送る</li>
           <li>プレビューで動きを確かめる。崩れていたら、ページ下の「直させ方」をコピーして送る</li>
           <li>仕上がったらコードを <code>名前.html</code> で保存し、ダブルクリックで開く</li>
@@ -172,15 +177,16 @@ svg.fig .chk { fill: var(--warn); font-size: 14px; font-weight: 700; }
         <h3>組み合わせ</h3>
         <ol>
           <li>「おすすめの組み合わせ」を押すか、部品を2〜3個と配置・主役を選ぶ</li>
-          <li>伝えたいこと・つながり・時間の流れを書く。つながりが組み合わせる価値の大半</li>
-          <li><b>段階版</b>（主役だけ作る → 1つずつ足す）をおすすめ。上から順にコピーして送る</li>
+          <li><b>ヒヤリング版</b>なら、伝えたいこと・つながり・時間の流れは書かなくてよい。Gemini が質問票で聞く</li>
+          <li>自分で書くなら<b>段階版</b>（主役だけ作る → 1つずつ足す）がおすすめ。上から順にコピーして送る</li>
           <li>部品の中身には「1つずつ」で書き換えた値が入る</li>
         </ol>
       </div>
       <div>
-        <h3>デッキ（複数枚）</h3>
+        <h3>Gem（一言で頼む・デッキ）</h3>
         <ol>
           <li>最初に1回だけ Gem を作る（指示文を貼り、技法カタログ .md を知識に入れる）。Gem を使わないなら貼り付け版を送る</li>
+          <li>1枚・組み合わせなら「売上の推移を動きで見せたい」と一言送るだけ。技法の候補も質問票に出る</li>
           <li>Gem に「NotebookLM なし（またはあり）で進めて」とテーマを送ると、質問票が出る。「なし」は自分で答える。「あり」は B の質問ブロックを NotebookLM に貼り、出典つきの答えを自分の答えと一緒に戻す</li>
           <li>構成案・技法案・詳細設計に「OK」か直したい点を返す。詳細設計で画面に出る数字と文言が決まる（「仮」「確認待ち」が残っていないか見る）</li>
           <li>各段階で送る文は、デッキタブの「各ステップで送るもの」にある（コピーして［ ］を書き換える）</li>
@@ -217,12 +223,16 @@ svg.fig .chk { fill: var(--warn); font-size: 14px; font-weight: 700; }
   <main>
     <section class="card" id="head"></section>
     <section class="card">
-      <h3 class="sec">中身を書き換える</h3>
+      <h3 class="sec">中身を書き換える（任意。書き換えていない欄は Gemini が聞く）</h3>
+      <div class="fields" style="margin-bottom:12px"><div class="field wide"><label>テーマ・使う場面（任意・1行。書くと Gemini が選択肢をこれに寄せる）</label><input type="text" id="s-theme" placeholder="例: 部内報告で、問い合わせ件数の推移を見せたい"></div></div>
       <div class="fields" id="fields"></div>
       <button class="reset" id="reset">既定値に戻す</button>
     </section>
     <section class="card">
-      <div class="prompt-head"><h3>Gemini に送るプロンプト</h3><button class="copy" id="copy">コピー</button><span class="count" id="count"></span></div>
+      <div class="prompt-head"><h3>Gemini に送るプロンプト</h3>
+        <div class="chips" id="s-kind"><button class="chip on" data-k="hear">ヒヤリングで頼む（おすすめ）</button><button class="chip" data-k="direct">そのまま頼む</button></div>
+        <button class="copy" id="copy">コピー</button><span class="count" id="count"></span></div>
+      <p class="note" id="s-note"></p>
       <pre class="preview" id="preview"></pre>
     </section>
     <section class="card">
@@ -254,7 +264,7 @@ svg.fig .chk { fill: var(--warn); font-size: 14px; font-weight: 700; }
   <section class="card">
     <div class="prompt-head">
       <h3>Gemini に送るプロンプト</h3>
-      <div class="chips" id="c-kind"><button class="chip on" data-k="bulk">一括版（1回で頼む）</button><button class="chip" data-k="step">段階版（2〜3回に分けて頼む・おすすめ）</button></div>
+      <div class="chips" id="c-kind"><button class="chip on" data-k="hear">ヒヤリング版（Gemini が聞く・手軽）</button><button class="chip" data-k="bulk">一括版（1回で頼む）</button><button class="chip" data-k="step">段階版（2〜3回に分けて頼む・おすすめ）</button></div>
     </div>
     <div id="c-out"></div>
   </section>
@@ -262,11 +272,11 @@ svg.fig .chk { fill: var(--warn); font-size: 14px; font-weight: 700; }
 
 <div class="pane" id="m-deck" hidden>
   <section class="card">
-    <h3 class="sec">複数枚のスライドを、Gemini に一続きで作らせる</h3>
-    <p class="lead">Gemini が ①ヒヤリング → ②構成案 → ③技法案 → ④詳細設計 → ⑤作成 → ⑥通し確認 の順に進める。④で画面に出る数字・文言・動きを作る前に確定させるので、作った後の差し戻しが減る。各スライドの技法は、下の技法カタログから Gemini が選んで提案する。<button class="linkbtn" id="d-to-guide">流れを図で見る</button></p>
+    <h3 class="sec">Gem に一言送るだけで、1枚・組み合わせ・デッキを作らせる</h3>
+    <p class="lead">Gem は最初に「1枚／組み合わせ／デッキ」を判断し、足りないことを選択肢つきの質問票で聞く。答えは「1-a 2-おまかせ」か「全部おまかせ」で返すだけ。デッキのときは Gemini が ①ヒヤリング → ②構成案 → ③技法案 → ④詳細設計 → ⑤作成 → ⑥通し確認 の順に進める。④で画面に出る数字・文言・動きを作る前に確定させるので、作った後の差し戻しが減る。各スライドの技法は、下の技法カタログから Gemini が選んで提案する。<button class="linkbtn" id="d-to-guide">流れを図で見る</button></p>
     <h3 class="sec">Gem の作り方（最初に1回だけ）</h3>
     <ol>
-      <li>gemini.google.com を開き、左のメニューから <b>Gem</b>（「Gem マネージャー」や「Gem を探す」）→「新しい Gem」を選ぶ。名前の例: <code>動くスライド デッキ係</code></li>
+      <li>gemini.google.com を開き、左のメニューから <b>Gem</b>（「Gem マネージャー」や「Gem を探す」）→「新しい Gem」を選ぶ。名前の例: <code>動くスライド係</code></li>
       <li>「指示」の欄に、下の <b>1. Gem の指示文</b> をコピーして貼る</li>
       <li>「知識」の欄に、<b>2. 技法カタログ</b> でダウンロードした <code>slide-catalog.md</code> を追加する</li>
       <li>保存する。使うときはその Gem を開き、使えるなら入力欄のツールで <b>Canvas</b> を選んでから、下の「各ステップで送るもの」の ① にある初回メッセージを送る</li>
@@ -947,9 +957,78 @@ function renderList() {
   });
 }
 
+/* ═════ ヒヤリング版: 書き換えていない欄を Gemini に質問票で聞かせる ═════ */
+
+let singleKind = 'hear';
+/* 質問票を先に返させるので「コードだけを返す」は、作る返答だけに効くように言い換える */
+const HEAR_COMMON = COMMON.split('\n')
+  .map((l) => (/説明は不要/.test(l) ? '- HTML を作る返答では、決まった値の一覧の後はコードだけを返す（長い説明は不要）' : l)).join('\n');
+
+/* 質問票の作り方。1枚・組み合わせで共通 */
+function hearRules(theme) {
+  return [
+    'まず、《 》の項目を質問票で聞いてください。最初の返答は質問票だけにしてください。',
+    '質問票の作り方:',
+    '- 《 》の項目を、番号つきで一度にまとめて出す。前置きは短くする',
+    '- 各問に選択肢を a・b・c の3つと「おまかせ」を付ける。a は（例: …）の値そのもの。b・c は' + (theme ? 'テーマに合わせた' : '別の題材の') + 'もっともらしい案にする',
+    '- データや一覧のような長い項目は、選択肢の中身を1〜2行に縮めて見せる',
+    '- 最後に「『1-a 2-おまかせ 3-（自由に書く）』の形で返してください。『全部おまかせ』なら例のまま作ります。社外秘の数字はダミーか丸めた値で書いてください」と添える',
+    '答えを受け取ったら:',
+    '- 決まった値を項目ごとに1行で示し、続けて HTML を作る（確認のために止めない）',
+    '- 「おまかせ」は例の値を使う。答えが足りない所はもっともらしい値で埋め、一覧で「仮」と書く',
+  ];
+}
+
+function isFixed(i, f) {
+  const v = values[i][f.key];
+  return v !== undefined && v.trim() !== '' && v !== f.def;
+}
+
+/* ヒヤリング版の部品（{text, cls} の並び）。聞く欄が無ければ null */
+function hearSegs(i) {
+  const t = TECHS[i], fs = fieldsOf(t);
+  const ask = fs.filter((f) => !isFixed(i, f)), fixed = fs.filter((f) => isFixed(i, f));
+  if (!ask.length) return null;
+  const theme = $('s-theme').value.trim();
+  const head = ['「' + t.title + '」の見せ方で、発表の1枚を1つの HTML ファイルで作りたいです。', '完成のイメージ: ' + t.image];
+  if (theme) head.push('テーマ・使う場面: ' + theme);
+  head.push('', ...hearRules(theme));
+  if (fixed.length) head.push('', '決まっていること（聞かなくてよい）: ' + fixed.map((f) => f.key).join('、'));
+  head.push('', '────────── 作るものの説明 ──────────', '');
+  const segs = [{ text: head.join('\n'), cls: 'hear' }];
+  let last = 0;
+  for (const m of t.prompt.matchAll(RE)) {
+    segs.push({ text: t.prompt.slice(last, m.index) });
+    if (m[1] === '共通') segs.push({ text: HEAR_COMMON, cls: 'common' });
+    else {
+      const f = fs.find((x) => x.key === m[1]);
+      segs.push(isFixed(i, f) ? { text: values[i][f.key], cls: 'fill' } : { text: '《' + f.key + '（例: ' + f.def + '）》', cls: 'ask' });
+    }
+    last = m.index + m[0].length;
+  }
+  segs.push({ text: t.prompt.slice(last) });
+  return segs;
+}
+
+/* コピーする文字列。ヒヤリングで聞く欄が無ければ、そのまま版と同じ */
+function singlePrompt(i) {
+  const segs = singleKind === 'hear' ? hearSegs(i) : null;
+  return segs ? segs.map((s) => s.text).join('') : build(i);
+}
+
 function renderPreview() {
   const t = TECHS[cur], pre = $('preview');
   pre.textContent = '';
+  const segs = singleKind === 'hear' ? hearSegs(cur) : null;
+  const nAsk = fieldsOf(t).filter((f) => !isFixed(cur, f)).length;
+  $('s-note').textContent = singleKind !== 'hear' ? '欄の値をそのまま入れて、すぐに HTML を作らせます。'
+    : segs ? '黄色の ' + nAsk + ' 項目を Gemini が選択肢つきの質問票で聞きます。返すのは「1-a 2-おまかせ」か「全部おまかせ」だけ。青は書き換えた値で、聞かれません。'
+      : 'すべての欄を書き換えてあるので、聞くことはありません。そのまま頼むのと同じ内容です。';
+  $('count').textContent = singlePrompt(cur).length.toLocaleString() + ' 文字';
+  if (segs) {
+    for (const s of segs) pre.append(s.cls ? el('span', { class: s.cls, text: s.text }) : s.text);
+    return;
+  }
   let last = 0;
   for (const m of t.prompt.matchAll(RE)) {
     pre.append(t.prompt.slice(last, m.index));
@@ -958,7 +1037,6 @@ function renderPreview() {
     last = m.index + m[0].length;
   }
   pre.append(t.prompt.slice(last));
-  $('count').textContent = build(cur).length.toLocaleString() + ' 文字';
 }
 
 function select(i) {
@@ -1008,7 +1086,7 @@ function toast(msg) {
 }
 
 $('copy').addEventListener('click', async () => {
-  const ok = await copyText(build(cur));
+  const ok = await copyText(singlePrompt(cur));
   const b = $('copy');
   b.textContent = ok ? 'コピーしました' : 'コピーできませんでした';
   b.classList.toggle('done', ok);
@@ -1016,6 +1094,12 @@ $('copy').addEventListener('click', async () => {
   setTimeout(() => { b.textContent = 'コピー'; b.classList.remove('done'); }, 1600);
 });
 $('reset').addEventListener('click', () => { values[cur] = {}; select(cur); });
+$('s-theme').addEventListener('input', renderPreview);
+[...$('s-kind').children].forEach((b) => b.addEventListener('click', () => {
+  singleKind = b.dataset.k;
+  [...$('s-kind').children].forEach((x) => x.classList.toggle('on', x === b));
+  renderPreview();
+}));
 
 for (const [when, text] of FIXES) {
   const btn = el('button', { class: 'mini', text: 'コピー' });
@@ -1081,7 +1165,8 @@ const PRESETS = [
     time: '- 0〜6 秒: 手描きで図が育つ\n- クリック: 原因へズーム\n- もう一度クリック: 全体へ戻る' },
 ];
 
-const combo = { parts: [['sliders', '左'], ['kpi', '右上'], ['compare', '右下']], main: 0, kind: 'bulk', preset: 0 };
+/* example はおすすめを押したときに入れた3欄の文。部品を変えても残し、書き換えたかどうかの判定に使う */
+const combo = { parts: [['sliders', '左'], ['kpi', '右上'], ['compare', '右下']], main: 0, kind: 'hear', preset: 0, example: {} };
 const techOf = (id) => TECHS.findIndex((t) => t.slide === id);
 
 /* 部品として差し込む中身: 共通の条件と「1つの HTML ファイルで作ってください」の行は外す */
@@ -1092,20 +1177,39 @@ function partBody(id) {
 
 function comboParts() { return combo.parts.filter((p) => p && p[0]); }
 
-function bulkPrompt() {
-  const ps = comboParts(), g = $('c-goal').value.trim(), links = $('c-links').value.trim(), time = $('c-time').value.trim();
+/* 組み合わせの作りの約束。Gem の指示文の「組み合わせ」でも同じ文を使う */
+const COMBO_RULES = [
+  '- 状態は1つのオブジェクト state にまとめ、各部品の描画関数（renderA(state) など）は state を読むだけにする',
+  '- 操作は state を書き換えてから、関係する部品を描き直す',
+  '- requestAnimationFrame のループは1本だけ。部品ごとにループを作らない',
+  '- 主役の部品をいちばん大きく、いちばん動かす。脇役は主役の邪魔をしない',
+  '- 部品の中身は、この1枚の一部として作る（部品ごとに別の画面にしない）',
+  '- HTML 全体を省略せずに出す',
+];
+
+/* 組み合わせの3欄。おすすめを押した直後の文のままなら、ヒヤリング版では「例」として聞く */
+const C_FIELDS = [['goal', 'c-goal', '伝えたいこと（1文）'], ['links', 'c-links', 'つながり（どの操作が、どの部品を変えるか）'], ['time', 'c-time', '時間の流れ（何秒後に何が出るか、クリックで何が起きるか）']];
+function comboField(k) {
+  const [key, id, label] = C_FIELDS.find((f) => f[0] === k);
+  const v = $(id).value.trim(), ex = combo.example[key];
+  return { label, v, fixed: !!v && v !== (ex || '').trim() };
+}
+
+/* hear = true でヒヤリング版。空欄とおすすめのままの欄を《 》にして聞かせる */
+function bulkPrompt(hear) {
+  const ps = comboParts(), g = comboField('goal'), links = comboField('links'), time = comboField('time');
+  const show = (f, blank) => (!hear || f.fixed ? f.v || blank : '《' + f.label + '（例: ' + (f.v || '部品に合わせた案') + '）》');
   const lines = ['発表の1枚として、次の部品を組み合わせた画面を、1つの HTML ファイルで作りたいです。', ''];
-  lines.push('【伝えたいこと】' + (g || '（1文で書く）'), '', '【配置】1920×1080');
+  if (hear) {
+    lines.push(...hearRules(g.fixed ? g.v : ''));
+    lines.push('- 《部品の中身》は「a 例（下の部品ごとの中身）のまま ／ b 伝えたいことに合わせて数字・項目名を作り直す ／ c 自分で書く」で聞く', '');
+  }
+  lines.push('【伝えたいこと】' + show(g, '（1文で書く）'), '', '【配置】1920×1080');
   ps.forEach((p, k) => lines.push('- ' + MARK[k] + (k === combo.main ? '（主役）' : '') + ': ' + TECHS[techOf(p[0])].title + ' — ' + POS[p[1]]));
-  lines.push('', '【つながり】', links || '- （どの操作が、どの部品を変えるかを書く）', '', '【時間の流れ】', time || '- （何秒後に何が出るか、クリックで何が起きるかを書く）', '', '【部品ごとの中身】');
+  lines.push('', '【つながり】', show(links, '- （どの操作が、どの部品を変えるかを書く）'), '', '【時間の流れ】', show(time, '- （何秒後に何が出るか、クリックで何が起きるかを書く）'), '',
+    '【部品ごとの中身】' + (hear ? '《部品の中身（例: 下のとおり）》' : ''));
   ps.forEach((p, k) => lines.push('', '■ ' + MARK[k] + ': ' + TECHS[techOf(p[0])].title, partBody(p[0])));
-  lines.push('', '【作りの約束】',
-    '- 状態は1つのオブジェクト state にまとめ、各部品の描画関数（renderA(state) など）は state を読むだけにする',
-    '- 操作は state を書き換えてから、関係する部品を描き直す',
-    '- requestAnimationFrame のループは1本だけ。部品ごとにループを作らない',
-    '- 主役の部品をいちばん大きく、いちばん動かす。脇役は主役の邪魔をしない',
-    '- 部品の中身は、この1枚の一部として作る（部品ごとに別の画面にしない）',
-    '- HTML 全体を省略せずに出す', '', COMMON);
+  lines.push('', '【作りの約束】', ...COMBO_RULES, '', hear ? HEAR_COMMON : COMMON);
   return lines.join('\n');
 }
 
@@ -1149,14 +1253,17 @@ function renderComboOut() {
   const ps = comboParts(), warn = [];
   if (ps.length < 2) warn.push('部品を2つ以上選んでください。');
   if (new Set(ps.map((p) => p[0])).size < ps.length) warn.push('同じ部品が2回選ばれています。');
-  if (!$('c-links').value.trim()) warn.push('つながりが空です。組み合わせる価値の大半はここにあります。');
+  if (combo.kind !== 'hear' && !$('c-links').value.trim()) warn.push('つながりが空です。組み合わせる価値の大半はここにあります。');
   const full = ps.filter((p) => p[1] === '全面').length;
   if (full && full < ps.length) warn.push('「全面」と他の配置が混ざっています。全面にするなら全部品を全面（場面の切り替え）にしてください。');
   $('c-warn').textContent = warn.join(' ');
   const out = $('c-out');
   out.textContent = '';
   if (ps.length < 2) return;
-  if (combo.kind === 'bulk') out.append(outBlock('一括版', bulkPrompt()));
+  if (combo.kind === 'hear') {
+    out.append(el('p', { class: 'note', text: '《 》の所を Gemini が選択肢つきの質問票で聞きます。返すのは「1-a 2-おまかせ」か「全部おまかせ」だけ。3つの欄を書き換えると、その欄は聞かれずに確定として送られます。' }));
+    out.append(outBlock('ヒヤリング版', bulkPrompt(true)));
+  } else if (combo.kind === 'bulk') out.append(outBlock('一括版', bulkPrompt(false)));
   else for (const [t, s] of stepPrompts()) out.append(outBlock(t, s));
 }
 
@@ -1193,6 +1300,7 @@ function applyPreset(i) {
   combo.parts = [P.parts[0], P.parts[1], P.parts[2] || null].map((p) => (p ? p.slice() : null));
   combo.main = P.main;
   $('c-goal').value = P.goal; $('c-links').value = P.links; $('c-time').value = P.time;
+  combo.example = { goal: P.goal, links: P.links, time: P.time };
   [...$('presets').children].forEach((b, j) => b.classList.toggle('on', j === i));
   renderParts();
   renderComboOut();
@@ -1232,7 +1340,8 @@ const W_LABEL = { 1: 'ふつう', 2: '重い' };
 
 function catalogMd() {
   const L = ['# 技法カタログ — 動くスライド', '',
-    'デッキの各スライドの見せ方は、このカタログの id から1つ選ぶ。カタログにない見せ方は作らない。',
+    '1枚・組み合わせ・デッキの各スライドの見せ方は、このカタログの id から選ぶ。カタログにない見せ方は作らない。',
+    '「置き換える項目」は、質問票で聞く候補。ユーザーの答えで「作り方」の中の該当する値を置き換える。',
     '重さ: 静的なスライド 0.5 ／ ふつう 1 ／ 重い 2（コードが長いか描画が重い）。1回の作成（ラウンド）で作るのは、重さの合計 3 まで。',
     '「作り方」は見本の既定の中身。ヒヤリングで聞いた内容に合わせて、数字・名前・項目を置き換えて使う。',
     'デッキの中で作るときの読み替え:',
@@ -1255,6 +1364,7 @@ function catalogMd() {
       '- 向く: ' + d.fit,
       '- 向かない: ' + d.avoid,
       '- 確かめること: ' + t.checks.join(' ／ '),
+      '- 置き換える項目: ' + fieldsOf(t).map((f) => f.key).join(' ／ '),
       '- 作り方:', '', '~~~text', techBody(i), '~~~', '');
   });
   return L.join('\n');
@@ -1267,8 +1377,35 @@ const DECK_COMMON = COMMON.split('\n').filter((l) => !/説明は不要/.test(l))
 
 function gemText() {
   return [
-    'あなたは、ブラウザで映す「動くスライド」のデッキ（複数枚のスライド）を作る担当です。',
-    '知識ファイル「技法カタログ」（slide-catalog.md）から各スライドの見せ方を選び、1つの HTML ファイルのデッキに仕上げます。',
+    'あなたは、ブラウザで映す「動くスライド」を作る担当です。',
+    '知識ファイル「技法カタログ」（slide-catalog.md）から見せ方を選び、1つの HTML ファイルに仕上げます。',
+    'ユーザーは中身を先に書かずに、一言だけ送ってきます。足りないことは、あなたが選択肢つきの質問票で聞きます。',
+    '',
+    '## ⓪ 入口: 何を作るか',
+    '初回メッセージから、次の3つのどれかを決める。',
+    '- 1枚: 見せ方を1つ使った1枚（例: 「売上の推移を動きで見せたい」）',
+    '- 組み合わせ: 1枚の中で見せ方 2〜3 個を連動させる（例: 「スライダーで前提を変えると、KPI とグラフが変わる1枚」）',
+    '- デッキ: 複数枚の発表（例: 「15 分の部内報告」「発表資料を作りたい」）',
+    '分からなければ、質問票の第1問で「a 1枚 ／ b 組み合わせ ／ c デッキ（複数枚） ／ おまかせ」と聞く。「おまかせ」なら、持ち時間か枚数が書いてあればデッキ、無ければ1枚にする。',
+    '',
+    '## 質問票の決まり（どの進め方でも）',
+    '- 質問は一度にまとめて、番号つきで出す。前置きは短くする。初回メッセージで分かっている項目は、答えを埋めて確認だけにする',
+    '- 各問に選択肢を a・b・c の3つと「おまかせ」を付ける。選択肢は初回メッセージのテーマに合わせて具体的に書く（数字・名前・項目名まで）',
+    '- 最後に「『1-a 2-おまかせ 3-（自由に書く）』の形で返してください。『全部おまかせ』でも進められます。社外秘の数字はダミーか丸めた値で書いてください」と添える',
+    '- 「おまかせ」の項目はあなたが決め、次の返答で決めた値を示す。答えが足りない所は、その点だけを1回だけ聞き直す。それでも足りなければ仮置きし、「仮」と明記する',
+    '',
+    '## 1枚のとき',
+    '1. 質問票: 発表の目的 ／ 見せたい中身（データ・数字・項目名）／ 技法（カタログから合う id を3つ選び、a・b・c にする。各案に1行の理由）／ 雰囲気。技法が決まっていれば、代わりにその技法の「置き換える項目」を1問ずつ聞く',
+    '2. 決めた値の一覧（技法 id、置き換える項目ごとの値、動きの台本を1〜3行）を出し、「OK」か直したい点を聞いて止まる。初回で技法が決まっていて「全部おまかせ」なら止まらずに3へ進む',
+    '3. 作成: カタログのその技法の「作り方」を元に、一覧の値に置き換えて、1つの HTML ファイルで作る。デッキの骨組み（SLIDES・scope）は使わず、下の「条件」に従う。コードの後にカタログの「確かめること」の点検を1行ずつ付ける',
+    '',
+    '## 組み合わせのとき',
+    '1. 質問票: 伝えたいこと（1文）／ 部品の組（カタログから 2〜3 個の id の組を3案。主役と配置も書く）／ つながり（どの操作がどの部品を変えるか）／ 時間の流れ ／ 見せたい数字',
+    '2. 決めた値の一覧（部品・配置・主役・つながり・時間の流れ・各部品の置き換える項目）を出し、「OK」か直したい点を聞いて止まる',
+    '3. 作成: 1つの HTML ファイルで作る。デッキの骨組みは使わず、下の「条件」と次の作りの約束に従う',
+    ...COMBO_RULES.map((l) => '  ' + l),
+    '',
+    '## デッキのとき',
     '次の ①〜⑥ の順に進めます。段階を飛ばさず、①〜④は各段階の終わりでユーザーの返事を待ってください。',
     '',
     '## 2つの進め方',
@@ -1277,17 +1414,16 @@ function gemText() {
     '初回メッセージにどちらかが書いてあれば、それに従う。書いていなければ「なし」で進め、質問票の冒頭に「資料から正確に答えたい場合は『NotebookLM あり』と返してください」と1行添える。',
     '',
     '## ① ヒヤリング',
-    '最初の返答では、質問票を一度にまとめて出す。前置きは短くする。初回メッセージで分かっている項目は、答えを埋めて示し、確認だけにする。',
+    '最初の返答では、上の「質問票の決まり」に従って質問票を出す。選択肢は次の例のように、テーマに合わせて作る。',
     '',
     '### 「なし」のとき',
-    '1. 発表の目的（例: 予算の承認を取りたい、勉強会で仕組みを伝えたい）',
-    '2. 聞き手（人数、立場、前提知識）',
-    '3. 持ち時間（分）',
-    '4. いちばん伝えたい結論（1文）',
-    '5. 使いたい数字・データ・資料の要点（無ければ「ダミーで」）',
-    '6. 枚数の希望（任意。無ければ持ち時間から決める）',
-    '7. 雰囲気（落ち着いた／勢いのある／遊び心のある、など）',
-    '質問票の最後に「社外秘の数字は、ダミーか丸めた値で書いてください」と添える。',
+    '1. 発表の目的（例: a 予算の承認を取りたい ／ b 勉強会で仕組みを伝えたい ／ c 結果を報告したい）',
+    '2. 聞き手（例: a 部長・課長 10 名前後、数字に慣れている ／ b 現場の担当者 30 名 ／ c 社外の顧客）',
+    '3. 持ち時間（例: a 5 分 ／ b 15 分 ／ c 30 分）',
+    '4. いちばん伝えたい結論（テーマから考えた1文の案を3つ）',
+    '5. 使いたい数字・データ（例: a ダミーで ／ b 次の数字を使う（自由に書く） ／ c 丸めた実数を書く）',
+    '6. 枚数（例: a 持ち時間から決める ／ b 5 枚 ／ c 10 枚）',
+    '7. 雰囲気（例: a 落ち着いた ／ b 勢いのある ／ c 遊び心のある）',
     '',
     '### 「あり」のとき',
     '質問を2つに分けて出す。',
@@ -1299,7 +1435,7 @@ function gemText() {
     '- 以後の段階では、NotebookLM の答えの番号を出典として書き続ける（例: 出典 NB-3）',
     '',
     '### どちらのときも',
-    '答えに足りない点があれば、その点だけを1回だけ聞き直す。それでも足りなければ仮置きして②へ進み、仮置きした点を②で明記する。',
+    '「全部おまかせ」なら、各問の a を基本に決めて②へ進み、決めた値を②の表の前に1行ずつ示す。仮置きした点は②で明記する。',
     '',
     '## ② 構成案',
     '表で出す: 番号 ／ 役割（表紙・目次・課題・根拠・提案・まとめ など）／ その枚で言いたいこと（1文）／ 使う数字（「あり」では出典も）',
@@ -1367,30 +1503,36 @@ function gemText() {
     '- DOM は createElement で組む',
     '',
     DECK_COMMON,
-    '- ⑤ではコードの後に点検だけを書き、長い説明はしない',
+    '- 作成の返答ではコードの後に点検だけを書き、長い説明はしない',
+    '- 1枚・組み合わせのアニメーションは requestAnimationFrame で回してよい（scope はデッキの骨組みだけのもの）',
   ].join('\n');
 }
 
 function pasteText() {
-  return 'これから、下の指示とカタログに従って、発表用のスライドを一緒に作ってください。最初の返答は ① の質問票だけにしてください。\n\n' +
+  return 'これから、下の指示とカタログに従って、動くスライドを一緒に作ってください。最初の返答は質問票だけにしてください。作りたいもの: ［売上の推移を動きで見せたい］\n\n' +
     '────────── 指示 ──────────\n' + gemText() + '\n\n────────── 技法カタログ ──────────\n' + catalogMd();
 }
 
 const FIRST_MSG = {
+  one: '［売上の推移を動きで見せたい］。質問票から始めてください。',
+  combo: '［スライダーで前提を変えると、KPI とグラフが一緒に変わる］1枚を作りたいです。質問票から始めてください。',
   plain: 'NotebookLM なしで進めてください。来月の部内報告（持ち時間 15 分）のスライドを作りたいです。テーマは「問い合わせ対応の改善」です。数字はダミーで構いません。質問票から始めてください。',
   nlm: 'NotebookLM ありで進めてください。来月の部内報告（持ち時間 15 分）のスライドを作りたいです。テーマは「問い合わせ対応の改善」で、関係する議事録と月次報告を NotebookLM に入れてあります。質問票から始めてください。',
 };
 
 /* 各段階でユーザーが Gemini に送る文例。段階名は gemText() の見出しとそろえる。［ ］は書き換える所 */
 const DECK_STEPS = [
-  { title: '① ヒヤリング', gemini: '「なし」は7問の質問票。「あり」は A（あなたに聞くこと）と B（NotebookLM に貼る質問ブロック）。',
+  { title: '① ヒヤリング', gemini: '選択肢（a・b・c・おまかせ）つきの質問票。デッキで「あり」のときは A（あなたに聞くこと）と B（NotebookLM に貼る質問ブロック）。',
     send: [
-      ['初回メッセージ（なし）', FIRST_MSG.plain],
+      ['初回メッセージ（1枚。［ ］を書き換えるだけ）', FIRST_MSG.one],
+      ['初回メッセージ（組み合わせ）', FIRST_MSG.combo],
+      ['初回メッセージ（デッキ・なし）', FIRST_MSG.plain],
       ['初回メッセージ（あり）', FIRST_MSG.nlm],
-      ['答えの返し方（なし）', '質問票に答えます。\n1. 目的: ［予算の承認を取りたい］\n2. 聞き手: ［部長 3 名・課長 10 名。数字には慣れている］\n3. 持ち時間: ［15 分］\n4. 結論: ［問い合わせの 4 割は手順書の更新で減らせる］\n5. 数字: ［ダミーで］\n6. 枚数: ［おまかせ］\n7. 雰囲気: ［落ち着いた］\n足りない点があれば聞いてください。無ければ②の構成案に進んでください。'],
-      ['答えの返し方（あり）', '## A の答え\n1. 目的: ［…］\n2. 聞き手: ［…］\n3. 持ち時間: ［…］\n4. 結論: ［…］\n6. 枚数: ［…］\n7. 雰囲気: ［…］\n\n## NotebookLM の答え（出典つき）\n［NotebookLM の回答を、番号と出典ごとそのまま貼る］\n\n「資料に無し」と食い違いがあれば一覧にして聞いてください。無ければ②の構成案に進んでください。'],
+      ['答えの返し方（いちばん手軽）', '全部おまかせ'],
+      ['答えの返し方（選ぶ）', '1-a 2-b 3-おまかせ 4-［問い合わせの 4 割は手順書の更新で減らせる］ 5-a 6-おまかせ 7-a'],
+      ['答えの返し方（あり）', '## A の答え\n［1-a 2-b 3-おまかせ 4-a 6-おまかせ 7-a（「全部おまかせ」でもよい）］\n\n## NotebookLM の答え（出典つき）\n［NotebookLM の回答を、番号と出典ごとそのまま貼る］\n\n「資料に無し」と食い違いがあれば一覧にして聞いてください。無ければ②の構成案に進んでください。'],
     ],
-    note: '「あり」のとき: B の質問ブロックは、Gemini が出したものをそのまま NotebookLM のチャットに貼る。NotebookLM の答えは出典の番号も含めてそのままコピーし、上の「答えの返し方（あり）」に貼る。' },
+    note: '1枚・組み合わせは、答えると決めた値の一覧が出る。「OK」で作成に進む（デッキの②〜⑥は無い）。「あり」のとき: B の質問ブロックは、Gemini が出したものをそのまま NotebookLM のチャットに貼る。NotebookLM の答えは出典の番号も含めてそのままコピーし、上の「答えの返し方（あり）」に貼る。' },
   { title: '② 構成案', gemini: '構成案の表（番号・役割・言いたいこと・使う数字）と、点検 3 行。',
     send: [
       ['OK のとき', 'OK です。③の技法案に進んでください。'],
@@ -1521,7 +1663,7 @@ function pickFig() {
   const ends = [
     { p: { cx: 900, cy: 45, w: 340, h: 78 }, mode: 'single', lines: ['1つずつ', '見せ方を1つ選んで1枚作る'], from: q2, label: '1つ' },
     { p: { cx: 900, cy: 145, w: 340, h: 78 }, mode: 'combo', lines: ['組み合わせ', '見せ方2〜3個を連動させて1枚'], from: q2, label: '2〜3個' },
-    { p: { cx: 900, cy: 252, w: 340, h: 78 }, mode: 'deck', lines: ['デッキ（複数枚）', '構成と技法選びも Gemini に任せる'], from: q1, label: '複数枚' },
+    { p: { cx: 900, cy: 252, w: 340, h: 78 }, mode: 'deck', lines: ['Gem（デッキも）', '一言送れば Gemini が聞いて選ぶ'], from: q1, label: '複数枚・迷ったら' },
   ];
   s.append(wire(q1, q2, 'x', mid, { label: '1枚' }));
   ends.forEach((e) => s.append(wire(e.from, e.p, 'x', mid, { label: e.label })));
